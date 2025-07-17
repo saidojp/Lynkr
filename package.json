@@ -34,6 +34,7 @@
     "zod": "^4.0.5"
   },
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
     "@nuxt/eslint": "^1.5.2",
     "@nuxt/eslint-config": "^1.5.2",
     "@nuxtjs/supabase": "^1.5.3",
@@ -43,10 +44,12 @@
     "@unocss/nuxt": "^66.3.3",
     "@vueuse/nuxt": "^13.5.0",
     "eslint": "^9.31.0",
+    "eslint-plugin-vue": "^10.3.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "unocss": "^66.3.3",
+    "vue-eslint-parser": "^10.2.0",
     "vue-tsc": "^3.0.1"
   }
 }
