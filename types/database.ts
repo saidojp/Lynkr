@@ -1,4 +1,6 @@
 // types/database.ts
+
+// Основные интерфейсы (как у вас уже есть)
 export interface User {
   id: string
   email: string
@@ -62,4 +64,37 @@ export interface Tag {
 export interface LinkTag {
   link_id: string
   tag_id: string
+}
+
+// Типы для Supabase
+export type Database = {
+  public: {
+    Tables: {
+      users: {
+        Row: User
+        Insert: Omit<User, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<User, 'id' | 'created_at' | 'updated_at'>>
+      }
+      collections: {
+        Row: Collection
+        Insert: Omit<Collection, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Collection, 'id' | 'created_at' | 'updated_at'>>
+      }
+      links: {
+        Row: Link
+        Insert: Omit<Link, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Link, 'id' | 'created_at' | 'updated_at'>>
+      }
+      tags: {
+        Row: Tag
+        Insert: Omit<Tag, 'id' | 'created_at'>
+        Update: Partial<Omit<Tag, 'id' | 'created_at'>>
+      }
+      link_tags: {
+        Row: LinkTag
+        Insert: LinkTag
+        Update: LinkTag
+      }
+    }
+  }
 }
