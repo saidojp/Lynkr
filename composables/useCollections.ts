@@ -1,61 +1,83 @@
 // composables/useCollections.ts
-import type { Collection } from '~/types/database'
+import { createClient } from '@supabase/supabase-js'
+import { useRuntimeConfig } from 'nuxt/app'
+import { useCollectionsStore } from '../stores/collections'
+import type { Collection, CollectionTree, CollectionWithCounts } from '../types/database'
 
 export const useCollections = () => {
-  const { supabase } = useSupabase()
-  const user = useSupabaseUser()
+  const config = useRuntimeConfig()
+  const supabase = createClient(
+    config.public.supabaseUrl as string,
+    config.public.supabaseAnonKey as string
+  )
+  const collectionsStore = useCollectionsStore()
+
+  // Вспомогательная функция для получения текущего пользователя
+  const getCurrentUser = async () => {
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser()
+    if (error || !user) {
+      throw new Error('User not authenticated')
+    }
+    return user
+  }
 
   // Получение всех коллекций пользователя
-  const getCollections = async (): Promise<Collection[]> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
+  const fetchCollections = async (): Promise<Collection[]> => {
+    const user = await getCurrentUser()
 
     const { data, error } = await supabase
       .from('collections')
       .select('*')
-      .eq('user_id', user.value.id)
+      .eq('user_id', user.id)
       .order('position', { ascending: true })
-      .order('created_at', { ascending: true })
 
-    if (error) throw error
+    if (error) {
+      console.error('Error fetching collections:', error)
+      throw error
+    }
+
+    collectionsStore.setCollections(data || [])
     return data || []
   }
 
-  // Получение коллекций с подколлекциями (иерархия)
-  const getCollectionsWithHierarchy = async (): Promise<Collection[]> => {
-    const collections = await getCollections()
-
-    // Группируем по parent_id
-    const collectionMap = new Map<string | null, Collection[]>()
-
-    collections.forEach(collection => {
-      const parentId = collection.parent_id
-      if (!collectionMap.has(parentId)) {
-        collectionMap.set(parentId, [])
-      }
-      collectionMap.get(parentId)?.push(collection)
-    })
-
-    // Возвращаем корневые коллекции
-    return collectionMap.get(null) || []
-  }
-
   // Создание новой коллекции
-  const createCollection = async (
-    collection: Omit<Collection, 'id' | 'created_at' | 'updated_at' | 'user_id'>
-  ): Promise<Collection> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
+  const createCollection = async (collectionData: {
+    name: string
+    description?: string
+    color?: string
+    icon?: string
+    parent_id?: string
+  }): Promise<Collection> => {
+    const user = await getCurrentUser()
+
+    // Получаем позицию для новой коллекции
+    const { count } = await supabase
+      .from('collections')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('parent_id', collectionData.parent_id || null)
+
+    const newCollection = {
+      ...collectionData,
+      user_id: user.id,
+      position: (count || 0) + 1,
+    }
 
     const { data, error } = await supabase
       .from('collections')
-      .insert({
-        ...collection,
-        user_id: user.value.id,
-        position: collection.position || 0,
-      })
+      .insert([newCollection])
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('Error creating collection:', error)
+      throw error
+    }
+
+    collectionsStore.addCollection(data)
     return data
   }
 
@@ -64,7 +86,7 @@ export const useCollections = () => {
     id: string,
     updates: Partial<Collection>
   ): Promise<Collection> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
+    const user = await getCurrentUser()
 
     const { data, error } = await supabase
       .from('collections')
@@ -73,73 +95,221 @@ export const useCollections = () => {
         updated_at: new Date().toISOString(),
       })
       .eq('id', id)
-      .eq('user_id', user.value.id)
+      .eq('user_id', user.id)
       .select()
       .single()
 
-    if (error) throw error
+    if (error) {
+      console.error('Error updating collection:', error)
+      throw error
+    }
+
+    collectionsStore.updateCollection(data)
     return data
   }
 
   // Удаление коллекции
   const deleteCollection = async (id: string): Promise<void> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
+    const user = await getCurrentUser()
 
     const { error } = await supabase
       .from('collections')
       .delete()
       .eq('id', id)
-      .eq('user_id', user.value.id)
-
-    if (error) throw error
-  }
-
-  // Получение одной коллекции
-  const getCollection = async (id: string): Promise<Collection | null> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
-
-    const { data, error } = await supabase
-      .from('collections')
-      .select('*')
-      .eq('id', id)
-      .eq('user_id', user.value.id)
-      .single()
+      .eq('user_id', user.id)
 
     if (error) {
-      if (error.code === 'PGRST116') return null // Not found
+      console.error('Error deleting collection:', error)
       throw error
     }
-    return data
+
+    collectionsStore.removeCollection(id)
   }
 
-  // Перемещение коллекции (изменение позиции)
-  const moveCollection = async (id: string, newPosition: number): Promise<void> => {
-    await updateCollection(id, { position: newPosition })
+  // Получение иерархии коллекций
+  const getCollectionHierarchy = async (): Promise<CollectionTree[]> => {
+    const collections = await fetchCollections()
+    return buildCollectionTree(collections)
   }
 
-  // Получение подколлекций
-  const getSubCollections = async (parentId: string): Promise<Collection[]> => {
-    if (!user.value?.id) throw new Error('User not authenticated')
+  // Построение древовидной структуры
+  const buildCollectionTree = (
+    collections: Collection[],
+    parentId: string | null = null,
+    level: number = 0
+  ): CollectionTree[] => {
+    return collections
+      .filter(collection => collection.parent_id === parentId)
+      .map(collection => ({
+        ...collection,
+        children: buildCollectionTree(collections, collection.id, level + 1),
+        level,
+        isExpanded: false,
+      }))
+      .sort((a, b) => a.position - b.position)
+  }
+
+  // Получение коллекций с количеством ссылок
+  const getCollectionsWithCounts = async (): Promise<CollectionWithCounts[]> => {
+    const user = await getCurrentUser()
 
     const { data, error } = await supabase
       .from('collections')
-      .select('*')
-      .eq('user_id', user.value.id)
-      .eq('parent_id', parentId)
+      .select(
+        `
+        *,
+        links(count),
+        children:collections!parent_id(count)
+      `
+      )
+      .eq('user_id', user.id)
       .order('position', { ascending: true })
 
-    if (error) throw error
-    return data || []
+    if (error) {
+      console.error('Error fetching collections with counts:', error)
+      throw error
+    }
+
+    return (data || []).map(collection => ({
+      ...collection,
+      linksCount: collection.links?.[0]?.count || 0,
+      childrenCount: collection.children?.[0]?.count || 0,
+    }))
+  }
+
+  // Изменение позиции коллекции
+  const updateCollectionPosition = async (
+    collectionId: string,
+    newPosition: number,
+    newParentId?: string
+  ): Promise<void> => {
+    const user = await getCurrentUser()
+
+    const { error } = await supabase
+      .from('collections')
+      .update({
+        position: newPosition,
+        parent_id: newParentId || null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', collectionId)
+      .eq('user_id', user.id)
+
+    if (error) {
+      console.error('Error updating collection position:', error)
+      throw error
+    }
+
+    // Обновляем позиции других коллекций
+    await reorderCollections(newParentId)
+  }
+
+  // Переупорядочивание коллекций
+  const reorderCollections = async (parentId?: string): Promise<void> => {
+    const user = await getCurrentUser()
+
+    const { data: collections, error } = await supabase
+      .from('collections')
+      .select('id, position')
+      .eq('user_id', user.id)
+      .eq('parent_id', parentId || null)
+      .order('position', { ascending: true })
+
+    if (error || !collections) return
+
+    const updates = collections.map((collection, index) => ({
+      id: collection.id,
+      position: index + 1,
+    }))
+
+    for (const update of updates) {
+      await supabase
+        .from('collections')
+        .update({ position: update.position })
+        .eq('id', update.id)
+        .eq('user_id', user.id)
+    }
+  }
+
+  // Перемещение коллекции в другого родителя
+  const moveCollectionToParent = async (
+    collectionId: string,
+    newParentId: string | null
+  ): Promise<void> => {
+    const user = await getCurrentUser()
+
+    // Получаем новую позицию
+    const { count } = await supabase
+      .from('collections')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+      .eq('parent_id', newParentId)
+
+    const newPosition = (count || 0) + 1
+
+    await updateCollectionPosition(collectionId, newPosition, newParentId || undefined)
+  }
+
+  // Получение пути к коллекции (breadcrumbs)
+  const getCollectionPath = async (collectionId: string): Promise<Collection[]> => {
+    const user = await getCurrentUser()
+    const path: Collection[] = []
+    let currentId: string | null = collectionId
+
+    while (currentId) {
+      const { data: collection, error } = await supabase
+        .from('collections')
+        .select('*')
+        .eq('id', currentId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (error || !collection) break
+
+      path.unshift(collection)
+      currentId = collection.parent_id
+    }
+
+    return path
+  }
+
+  // Проверка глубины вложенности (максимум 3 уровня)
+  const checkNestingDepth = async (parentId: string | null): Promise<number> => {
+    if (!parentId) return 0
+
+    const user = await getCurrentUser()
+    let depth = 0
+    let currentParentId: string | null = parentId
+
+    while (currentParentId && depth < 3) {
+      const { data: parent, error } = await supabase
+        .from('collections')
+        .select('parent_id')
+        .eq('id', currentParentId)
+        .eq('user_id', user.id)
+        .single()
+
+      if (error || !parent) break
+
+      depth++
+      currentParentId = parent.parent_id
+    }
+
+    return depth
   }
 
   return {
-    getCollections,
-    getCollectionsWithHierarchy,
+    fetchCollections,
     createCollection,
     updateCollection,
     deleteCollection,
-    getCollection,
-    moveCollection,
-    getSubCollections,
+    getCollectionHierarchy,
+    buildCollectionTree,
+    getCollectionsWithCounts,
+    updateCollectionPosition,
+    reorderCollections,
+    moveCollectionToParent,
+    getCollectionPath,
+    checkNestingDepth,
   }
 }

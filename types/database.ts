@@ -67,6 +67,17 @@ export interface LinkTag {
 }
 
 // Типы для Supabase
+export interface CollectionTree extends Collection {
+  children: CollectionTree[]
+  level: number
+  isExpanded: boolean
+}
+
+export interface CollectionWithCounts extends Collection {
+  linksCount: number
+  childrenCount: number
+}
+
 export type Database = {
   public: {
     Tables: {
