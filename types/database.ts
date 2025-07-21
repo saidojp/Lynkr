@@ -26,6 +26,8 @@ export interface Collection {
   icon?: string
   parent_id?: string
   position: number
+  is_public: boolean
+  is_favorite: boolean
   created_at: string
   updated_at: string
 }
