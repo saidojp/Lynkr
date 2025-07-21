@@ -362,5 +362,63 @@ export const useCollectionsStore = defineStore('collections', {
         this.setLoading(false)
       }
     },
+
+    // Обновить состояние развернутых коллекций в дереве
+    updateCollectionsExpanded(collectionsTree: CollectionTree[]): void {
+      collectionsTree.forEach(collection => {
+        if (collection.isExpanded) {
+          this.expandedCollections.add(collection.id)
+        } else {
+          this.expandedCollections.delete(collection.id)
+        }
+
+        if (collection.children && collection.children.length > 0) {
+          this.updateCollectionsExpanded(collection.children)
+        }
+      })
+    },
+
+    // Явный метод для загрузки коллекций
+    async fetchCollections(): Promise<Collection[]> {
+      this.setLoading(true)
+      this.setError(null)
+
+      try {
+        const { fetchCollections } = useCollections()
+        const collections = await fetchCollections()
+        this.setCollections(collections)
+        return collections
+      } catch (error) {
+        console.error('Error fetching collections:', error)
+        this.setError(error instanceof Error ? error.message : 'Failed to fetch collections')
+        throw error
+      } finally {
+        this.setLoading(false)
+      }
+    },
+
+    // Переключить статус избранного
+    async toggleFavorite(collectionId: string): Promise<Collection> {
+      const collection = this.collections.find(c => c.id === collectionId)
+      if (!collection) {
+        throw new Error('Collection not found')
+      }
+
+      return await this.editCollection(collectionId, {
+        is_favorite: !collection.is_favorite,
+      })
+    },
+
+    // Переключить статус публичного доступа
+    async togglePublic(collectionId: string): Promise<Collection> {
+      const collection = this.collections.find(c => c.id === collectionId)
+      if (!collection) {
+        throw new Error('Collection not found')
+      }
+
+      return await this.editCollection(collectionId, {
+        is_public: !collection.is_public,
+      })
+    },
   },
 })

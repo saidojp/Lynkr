@@ -75,6 +75,8 @@ export interface CollectionTree extends Collection {
   children: CollectionTree[]
   level: number
   isExpanded: boolean
+  linksCount?: number
+  childrenCount?: number
 }
 
 export interface CollectionWithCounts extends Collection {
