@@ -28,6 +28,8 @@ export interface Collection {
   position: number
   is_public: boolean
   is_favorite: boolean
+  default_sort?: string
+  default_view?: string
   created_at: string
   updated_at: string
 }
@@ -78,6 +80,14 @@ export interface CollectionTree extends Collection {
 export interface CollectionWithCounts extends Collection {
   linksCount: number
   childrenCount: number
+}
+
+// Типы для drag & drop
+export interface DragData {
+  type: 'collection'
+  id: string
+  parentId: string | null
+  position: number
 }
 
 export type Database = {

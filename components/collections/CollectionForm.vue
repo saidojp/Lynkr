@@ -234,7 +234,7 @@ import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../stores/collections'
 import CollectionIconPicker from './CollectionIconPicker.vue'
 import CollectionColorPicker from './CollectionColorPicker.vue'
-import type { Collection, CollectionTree } from '@/types'
+import type { Collection, CollectionTree } from '../../types'
 import {
   Folder,
   FolderOpen,
@@ -394,8 +394,8 @@ const handleSubmit = async () => {
     const data = {
       ...form.value,
       name: form.value.name.trim(),
-      description: form.value.description?.trim() || null,
-      parent_id: form.value.parent_id || null,
+      description: form.value.description?.trim() || undefined,
+      parent_id: form.value.parent_id || undefined,
     }
 
     emit('submit', data)

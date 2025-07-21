@@ -103,6 +103,10 @@ export const useCollectionsStore = defineStore('collections', {
             icon: collection.icon,
             parent_id: collection.parent_id,
             position: collection.position,
+            is_public: collection.is_public,
+            is_favorite: collection.is_favorite,
+            default_sort: collection.default_sort,
+            default_view: collection.default_view,
             created_at: collection.created_at,
             updated_at: collection.updated_at,
           }))
@@ -291,6 +295,72 @@ export const useCollectionsStore = defineStore('collections', {
     // Обновление данных
     async refresh() {
       await this.initialize()
+    },
+
+    // Создать коллекцию
+    async createCollection(collectionData: {
+      name: string
+      description?: string
+      color?: string
+      icon?: string
+      parent_id?: string
+      is_public?: boolean
+      is_favorite?: boolean
+      default_sort?: string
+      default_view?: string
+    }): Promise<Collection> {
+      this.setLoading(true)
+      this.setError(null)
+
+      try {
+        const { createCollection } = useCollections()
+        const newCollection = await createCollection(collectionData)
+        this.addCollection(newCollection)
+        return newCollection
+      } catch (error) {
+        console.error('Error creating collection:', error)
+        this.setError(error instanceof Error ? error.message : 'Failed to create collection')
+        throw error
+      } finally {
+        this.setLoading(false)
+      }
+    },
+
+    // Обновить коллекцию
+    async editCollection(collectionId: string, updates: Partial<Collection>): Promise<Collection> {
+      this.setLoading(true)
+      this.setError(null)
+
+      try {
+        const { updateCollection } = useCollections()
+        const updatedCollection = await updateCollection(collectionId, updates)
+        this.updateCollection(updatedCollection)
+        return updatedCollection
+      } catch (error) {
+        console.error('Error updating collection:', error)
+        this.setError(error instanceof Error ? error.message : 'Failed to update collection')
+        throw error
+      } finally {
+        this.setLoading(false)
+      }
+    },
+
+    // Удалить коллекцию
+    async deleteCollection(collectionId: string): Promise<void> {
+      this.setLoading(true)
+      this.setError(null)
+
+      try {
+        const { deleteCollection } = useCollections()
+        await deleteCollection(collectionId)
+        this.removeCollection(collectionId)
+      } catch (error) {
+        console.error('Error deleting collection:', error)
+        this.setError(error instanceof Error ? error.message : 'Failed to delete collection')
+        throw error
+      } finally {
+        this.setLoading(false)
+      }
     },
   },
 })

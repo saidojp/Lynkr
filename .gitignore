@@ -24,4 +24,4 @@ logs
 !.env.example
 
 #other
-.Phase
+./Phase/

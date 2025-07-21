@@ -50,6 +50,10 @@ export const useCollections = () => {
     color?: string
     icon?: string
     parent_id?: string
+    is_public?: boolean
+    is_favorite?: boolean
+    default_sort?: string
+    default_view?: string
   }): Promise<Collection> => {
     const user = await getCurrentUser()
 
@@ -61,7 +65,15 @@ export const useCollections = () => {
       .eq('parent_id', collectionData.parent_id || null)
 
     const newCollection = {
-      ...collectionData,
+      name: collectionData.name,
+      description: collectionData.description || null,
+      color: collectionData.color || '#9aa0a6',
+      icon: collectionData.icon || 'folder',
+      parent_id: collectionData.parent_id || null,
+      is_public: collectionData.is_public || false,
+      is_favorite: collectionData.is_favorite || false,
+      default_sort: collectionData.default_sort || 'created_desc',
+      default_view: collectionData.default_view || 'grid',
       user_id: user.id,
       position: (count || 0) + 1,
     }

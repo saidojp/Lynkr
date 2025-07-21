@@ -1,0 +1,280 @@
+<template>
+  <div class="collection-node">
+    <!-- Основная строка коллекции -->
+    <div
+      class="flex items-center p-2 hover:bg-gray-50 cursor-pointer group relative"
+      :class="{
+        'bg-black text-white': isSelected,
+        'ml-4': level > 0,
+        'border-l-4 border-black': level > 0,
+      }"
+      :style="{ paddingLeft: `${level * 16 + 8}px` }"
+      @click="$emit('select', collection.id)"
+    >
+      <!-- Кнопка разворота (если есть дети) -->
+      <button
+        v-if="hasChildren"
+        @click.stop="$emit('toggle-expand', collection.id)"
+        class="flex-shrink-0 p-1 mr-2 rounded hover:bg-gray-200 transition-colors duration-150"
+        :class="{ 'hover:bg-gray-600': isSelected }"
+      >
+        <ChevronRight
+          class="w-3 h-3 transition-transform duration-150"
+          :class="{ 'rotate-90': isExpanded }"
+        />
+      </button>
+
+      <!-- Отступ если нет детей -->
+      <div v-else class="w-5 flex-shrink-0"></div>
+
+      <!-- Иконка коллекции -->
+      <div
+        class="flex-shrink-0 w-6 h-6 border-2 border-black bg-white flex items-center justify-center mr-3"
+        :style="{
+          borderLeftColor: collection.color || '#9aa0a6',
+          borderLeftWidth: '4px',
+          backgroundColor: isSelected ? 'white' : 'white',
+        }"
+      >
+        <component
+          :is="getIconComponent(collection.icon)"
+          class="w-3 h-3"
+          :class="{ 'text-black': true }"
+        />
+      </div>
+
+      <!-- Название коллекции -->
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center space-x-2">
+          <!-- Название с подсветкой поиска -->
+          <span
+            class="font-medium text-sm truncate"
+            :class="{ 'text-white': isSelected, 'text-black': !isSelected }"
+            v-html="highlightSearch(collection.name)"
+          ></span>
+
+          <!-- Индикаторы -->
+          <div class="flex items-center space-x-1">
+            <span v-if="collection.is_public" class="text-xs" title="Публичная">🌐</span>
+            <span v-if="collection.is_favorite" class="text-xs" title="Избранная">❤️</span>
+          </div>
+        </div>
+
+        <!-- Описание (если есть и включен поиск) -->
+        <p
+          v-if="collection.description && searchQuery"
+          class="text-xs mt-1 truncate"
+          :class="{ 'text-gray-300': isSelected, 'text-gray-600': !isSelected }"
+          v-html="highlightSearch(collection.description)"
+        ></p>
+      </div>
+
+      <!-- Счетчик ссылок -->
+      <div
+        v-if="linksCount !== undefined"
+        class="flex-shrink-0 text-xs px-2 py-1 rounded"
+        :class="{
+          'bg-white text-black': isSelected,
+          'bg-gray-100 text-gray-600': !isSelected,
+        }"
+      >
+        {{ linksCount }}
+      </div>
+
+      <!-- Меню действий (показывается при наведении) -->
+      <div class="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <CollectionNodeActions
+          :collection="collection"
+          :is-selected="isSelected"
+          @edit="$emit('edit', collection)"
+          @delete="$emit('delete', collection)"
+          @create-subcollection="$emit('create-subcollection', collection.id)"
+        />
+      </div>
+    </div>
+
+    <!-- Дочерние коллекции -->
+    <div v-if="hasChildren && isExpanded" class="children-container">
+      <CollectionTreeNode
+        v-for="child in collection.children"
+        :key="child.id"
+        :collection="child"
+        :level="level + 1"
+        :selected-id="selectedId"
+        :expanded-ids="expandedIds"
+        :search-query="searchQuery"
+        @select="$emit('select', $event)"
+        @toggle-expand="$emit('toggle-expand', $event)"
+        @edit="$emit('edit', $event)"
+        @delete="$emit('delete', $event)"
+        @create-subcollection="$emit('create-subcollection', $event)"
+      />
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import type { Collection, CollectionTree } from '../../../types'
+import { ChevronRight } from 'lucide-vue-next'
+import {
+  Folder,
+  FolderOpen,
+  Star,
+  Heart,
+  Bookmark,
+  Tag,
+  Archive,
+  Globe,
+  Lock,
+  Coffee,
+  Briefcase,
+  Home,
+  User,
+  Settings,
+  Book,
+  Music,
+  Image,
+  Video,
+  Code,
+  Gamepad2,
+  ShoppingCart,
+} from 'lucide-vue-next'
+// Импортируем после остальных импортов
+import CollectionNodeActions from './CollectionNodeActions.vue'
+
+interface Props {
+  collection: CollectionTree
+  level: number
+  selectedId?: string | null
+  expandedIds: string[]
+  searchQuery?: string
+  linksCount?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  selectedId: null,
+  searchQuery: '',
+  linksCount: undefined,
+})
+
+const emit = defineEmits<{
+  select: [collectionId: string]
+  'toggle-expand': [collectionId: string]
+  edit: [collection: Collection]
+  delete: [collection: Collection]
+  'create-subcollection': [parentId: string]
+}>()
+
+// Компоненты иконок
+const iconComponents = {
+  folder: Folder,
+  'folder-open': FolderOpen,
+  star: Star,
+  heart: Heart,
+  bookmark: Bookmark,
+  tag: Tag,
+  archive: Archive,
+  globe: Globe,
+  lock: Lock,
+  coffee: Coffee,
+  briefcase: Briefcase,
+  home: Home,
+  user: User,
+  settings: Settings,
+  book: Book,
+  music: Music,
+  image: Image,
+  video: Video,
+  code: Code,
+  gamepad2: Gamepad2,
+  'shopping-cart': ShoppingCart,
+}
+
+// Вычисляемые свойства
+const isSelected = computed(() => props.selectedId === props.collection.id)
+const hasChildren = computed(
+  () => props.collection.children && props.collection.children.length > 0
+)
+const isExpanded = computed(() => props.expandedIds.includes(props.collection.id))
+
+// Получить компонент иконки
+const getIconComponent = (iconName?: string) => {
+  return iconComponents[iconName as keyof typeof iconComponents] || Folder
+}
+
+// Подсветка поискового запроса в тексте
+const highlightSearch = (text: string): string => {
+  if (!props.searchQuery || !text) return text
+
+  const regex = new RegExp(`(${escapeRegExp(props.searchQuery)})`, 'gi')
+  return text.replace(regex, '<mark class="bg-yellow-200 text-black px-1">$1</mark>')
+}
+
+// Экранирование специальных символов для регулярного выражения
+const escapeRegExp = (string: string): string => {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+</script>
+
+<style scoped>
+/* Анимации разворота */
+.children-container {
+  animation: expandChildren 0.2s ease-out;
+  overflow: hidden;
+}
+
+@keyframes expandChildren {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Hover эффекты */
+.collection-node {
+  transition: all 0.15s ease-in-out;
+}
+
+.group:hover {
+  transform: translateX(2px);
+}
+
+/* Стилизация маркера поиска */
+:deep(mark) {
+  background-color: #fef08a;
+  color: #000;
+  padding: 0.125rem;
+  border-radius: 0.25rem;
+}
+
+/* Стили для выбранного элемента */
+.collection-node .bg-black {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Индентация для вложенных элементов */
+.border-l-4 {
+  position: relative;
+}
+
+.border-l-4::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #e5e7eb;
+  opacity: 0.5;
+}
+
+/* Плавная анимация для кнопки разворота */
+.transition-transform {
+  transition: transform 0.15s ease-in-out;
+}
+</style>
