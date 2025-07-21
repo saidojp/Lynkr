@@ -47,7 +47,7 @@
         :selected-collection-id="selectedCollectionId"
         @create-collection="showCreateModal = true"
         @create-subcollection="handleCreateSubcollection"
-        @select-collection="handleSelectCollection"
+        @select-collection="handleSelectCollectionById"
         @edit-collection="handleEditCollection"
         @delete-collection="handleDeleteCollection"
         @retry="loadCollections"
@@ -191,7 +191,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../stores/collections'
-import type { Collection } from '../types'
+import type { Collection } from '../types/database'
 
 // Компоненты
 import CollectionSidebar from '../components/collections/navigation/CollectionSidebar.vue'
@@ -234,7 +234,11 @@ const loadCollections = async () => {
   }
 }
 
-const handleSelectCollection = (collectionId: string) => {
+const handleSelectCollection = (collection: Collection) => {
+  selectedCollectionId.value = collection.id
+}
+
+const handleSelectCollectionById = (collectionId: string) => {
   selectedCollectionId.value = collectionId
 }
 
