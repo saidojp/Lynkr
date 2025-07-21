@@ -32,6 +32,11 @@ export interface Collection {
   default_view?: string
   created_at: string
   updated_at: string
+  // Дополнительные поля, используемые в UI
+  links_count?: number
+  children_count?: number
+  completion_percentage?: number
+  tags?: string[]
 }
 
 export interface Link {

@@ -165,8 +165,8 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useCollectionsStore } from '../stores/collections'
-import type { Collection } from '../types/database'
+import { useCollectionsStore } from '../../stores/collections'
+import type { Collection } from '../../types/database'
 
 // Props
 interface Props {
@@ -233,9 +233,7 @@ const toggleFavorite = async () => {
 const toggleVisibility = async () => {
   showMenu.value = false
   try {
-    await collectionsStore.updateCollection(props.collection.id, {
-      is_public: !props.collection.is_public,
-    })
+    await collectionsStore.togglePublic(props.collection.id)
   } catch (error) {
     console.error('Error toggling visibility:', error)
   }
@@ -313,6 +311,7 @@ onUnmounted(() => {
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }

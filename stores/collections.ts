@@ -420,5 +420,39 @@ export const useCollectionsStore = defineStore('collections', {
         is_public: !collection.is_public,
       })
     },
+
+    // Дублировать коллекцию
+    async duplicateCollection(collectionId: string): Promise<Collection> {
+      this.setLoading(true)
+      this.setError(null)
+
+      try {
+        const collection = this.collections.find(c => c.id === collectionId)
+        if (!collection) {
+          throw new Error('Collection not found')
+        }
+
+        // Создаем копию коллекции с новым именем
+        const duplicatedData = {
+          name: `${collection.name} (копия)`,
+          description: collection.description,
+          color: collection.color,
+          icon: collection.icon,
+          parent_id: collection.parent_id,
+          is_public: collection.is_public,
+          is_favorite: false, // копия не добавляется в избранное по умолчанию
+          default_sort: collection.default_sort,
+          default_view: collection.default_view,
+        }
+
+        return await this.createCollection(duplicatedData)
+      } catch (error) {
+        console.error('Error duplicating collection:', error)
+        this.setError(error instanceof Error ? error.message : 'Failed to duplicate collection')
+        throw error
+      } finally {
+        this.setLoading(false)
+      }
+    },
   },
 })
