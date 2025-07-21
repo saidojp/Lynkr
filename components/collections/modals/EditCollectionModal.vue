@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionsStore } from '../../../stores/collections'
+import { useCollections } from '../../../composables/useCollections'
 import CollectionForm from '../CollectionForm.vue'
 import UiModal from '../../ui/UiModal.vue'
 import type { Collection } from '../../../types'
@@ -27,14 +27,16 @@ const emit = defineEmits<{
   success: [collection: Collection]
 }>()
 
-const collectionsStore = useCollectionsStore()
+const { updateCollection } = useCollections()
 
 const handleSubmit = async (data: Partial<Collection>) => {
   if (!props.collection) return
 
   try {
-    const updatedCollection = await collectionsStore.editCollection(props.collection.id, data)
-    emit('success', updatedCollection)
+    const updatedCollection = await updateCollection(props.collection.id, data)
+    if (updatedCollection) {
+      emit('success', updatedCollection)
+    }
     handleClose()
   } catch (error) {
     console.error('Error updating collection:', error)

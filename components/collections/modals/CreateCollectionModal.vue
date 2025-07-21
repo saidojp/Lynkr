@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCollectionsStore } from '../../../stores/collections'
+import { useCollections } from '../../../composables/useCollections'
 import CollectionForm from '../CollectionForm.vue'
 import UiModal from '../../ui/UiModal.vue'
 import type { Collection } from '../../../types'
@@ -29,7 +29,7 @@ const emit = defineEmits<{
   success: [collection: Collection]
 }>()
 
-const collectionsStore = useCollectionsStore()
+const { createCollection } = useCollections()
 
 const handleSubmit = async (data: Partial<Collection>) => {
   try {
@@ -42,14 +42,10 @@ const handleSubmit = async (data: Partial<Collection>) => {
       description: data.description,
       color: data.color,
       icon: data.icon,
-      parent_id: data.parent_id,
-      is_public: data.is_public,
-      is_favorite: data.is_favorite,
-      default_sort: data.default_sort,
-      default_view: data.default_view,
+      parent_id: data.parent_id || props.parentId,
     }
 
-    const newCollection = await collectionsStore.createCollection(collectionData)
+    const newCollection = await createCollection(collectionData)
     emit('success', newCollection)
     handleClose()
   } catch (error) {

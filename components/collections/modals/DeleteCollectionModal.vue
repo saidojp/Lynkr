@@ -124,7 +124,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useCollectionsStore } from '../../../stores/collections'
+import { useCollections } from '../../../composables/useCollections'
 import UiModal from '../../ui/UiModal.vue'
 import type { Collection } from '../../../types'
 import { AlertTriangle } from 'lucide-vue-next'
@@ -169,7 +169,7 @@ const emit = defineEmits<{
   success: [collectionId: string]
 }>()
 
-const collectionsStore = useCollectionsStore()
+const { deleteCollection } = useCollections()
 
 const confirmationName = ref('')
 const showConfirmationError = ref(false)
@@ -220,7 +220,7 @@ const handleDelete = async () => {
   loading.value = true
 
   try {
-    await collectionsStore.deleteCollection(props.collection.id)
+    await deleteCollection(props.collection.id)
     emit('success', props.collection.id)
     handleClose()
   } catch (error) {
