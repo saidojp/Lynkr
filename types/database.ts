@@ -21,10 +21,10 @@ export interface Collection {
   id: string
   user_id: string
   name: string
-  description?: string
+  description?: string | null
   color?: string
   icon?: string
-  parent_id?: string
+  parent_id?: string | null
   position: number
   is_public: boolean
   is_favorite: boolean

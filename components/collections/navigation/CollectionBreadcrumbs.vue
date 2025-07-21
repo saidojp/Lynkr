@@ -156,7 +156,9 @@ const goUp = () => {
   } else {
     // Иначе идем к родительской коллекции
     const parentBreadcrumb = breadcrumbs.value[breadcrumbs.value.length - 2]
-    emit('navigate', parentBreadcrumb.id)
+    if (parentBreadcrumb) {
+      emit('navigate', parentBreadcrumb.id)
+    }
   }
 }
 </script>

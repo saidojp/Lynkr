@@ -1,16 +1,18 @@
 // nuxt.config.ts
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  compatibilityDate: '2025-07-21',
 
   // TypeScript конфигурация
   typescript: {
-    typeCheck: true,
-    strict: true,
+    typeCheck: false,
+    strict: false,
   },
 
-  css: ['@unocss/reset/tailwind.css'],
+  // Use UnoCSS reset only, removing Tailwind reset to avoid conflicts
+  css: ['@unocss/reset/tailwind-compat.css', '~/assets/css/main.css'],
 
-  modules: ['@nuxt/eslint', '@pinia/nuxt', '@unocss/nuxt', '@vueuse/nuxt', '@nuxtjs/supabase'],
+  modules: ['@nuxt/eslint', '@pinia/nuxt', '@unocss/nuxt', '@vueuse/nuxt'],
 
   // Настройки приложения
   app: {

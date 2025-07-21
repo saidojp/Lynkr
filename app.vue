@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-container">
     <!-- Здесь будут отображаться все страницы с их лейаутами -->
     <NuxtLayout>
       <NuxtPage />
@@ -11,7 +11,7 @@
 // Глобальные настройки приложения
 import { useHead } from '#app'
 // Импортируем CSS файл напрямую
-// import '~/assets/css/main.css' - временно отключили из-за проблем с алиасом
+import './assets/css/main.css'
 
 // Настройка мета-тегов для всего приложения
 useHead({

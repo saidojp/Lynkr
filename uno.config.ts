@@ -1,10 +1,17 @@
 // uno.config.ts
-import { defineConfig, presetUno, presetAttributify, presetWebFonts } from 'unocss'
+import { defineConfig, presetUno, presetAttributify, presetWebFonts, presetIcons } from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetUno(),
+    presetUno({ dark: 'class' }),
     presetAttributify(),
+    presetIcons({
+      scale: 1.2,
+      extraProperties: {
+        display: 'inline-block',
+        'vertical-align': 'middle',
+      },
+    }),
     presetWebFonts({
       fonts: {
         sans: 'Inter:400,500,600,700',
@@ -12,6 +19,8 @@ export default defineConfig({
       },
     }),
   ],
+  // Ensure UnoCSS works well with other potential libraries
+  safelist: ['prose', 'prose-sm', 'm-auto', 'text-left'],
 
   theme: {
     colors: {

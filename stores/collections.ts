@@ -303,7 +303,7 @@ export const useCollectionsStore = defineStore('collections', {
       description?: string
       color?: string
       icon?: string
-      parent_id?: string
+      parent_id?: string | null
       is_public?: boolean
       is_favorite?: boolean
       default_sort?: string
@@ -313,8 +313,24 @@ export const useCollectionsStore = defineStore('collections', {
       this.setError(null)
 
       try {
-        const { createCollection } = useCollections()
-        const newCollection = await createCollection(collectionData)
+        // Временная заглушка без Supabase
+        const newCollection: Collection = {
+          id: Date.now().toString(),
+          user_id: 'temp-user',
+          name: collectionData.name,
+          description: collectionData.description || null,
+          color: collectionData.color || '#9aa0a6',
+          icon: collectionData.icon || 'folder',
+          parent_id: collectionData.parent_id || null,
+          position: this.collections.length + 1,
+          is_public: collectionData.is_public || false,
+          is_favorite: collectionData.is_favorite || false,
+          default_sort: collectionData.default_sort || 'created_desc',
+          default_view: collectionData.default_view || 'grid',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }
+
         this.addCollection(newCollection)
         return newCollection
       } catch (error) {

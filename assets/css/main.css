@@ -1,0 +1,35 @@
+/* Main CSS file for Lynkr app */
+
+/* Base styles */
+html,
+body {
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* App container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--bg-color, #f8f9fa);
+  color: var(--text-color, #202124);
+}
+
+/* Dark mode support */
+html.dark {
+  --bg-color: #202124;
+  --text-color: #f1f3f4;
+}
+
+/* Make sure UnoCSS utilities have higher specificity */
+:root [class*='uno:'] {
+  all: unset;
+}
+
+/* Fix for UnoCSS and reset conflicts */
+.uno-reset {
+  all: revert;
+}

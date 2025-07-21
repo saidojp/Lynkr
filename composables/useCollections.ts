@@ -1,15 +1,15 @@
 // composables/useCollections.ts
-import { createClient } from '@supabase/supabase-js'
-import { useRuntimeConfig } from 'nuxt/app'
+// import { createClient } from '@supabase/supabase-js'
+// import { useRuntimeConfig } from 'nuxt/app'
 import { useCollectionsStore } from '../stores/collections'
 import type { Collection, CollectionTree, CollectionWithCounts } from '../types/database'
 
 export const useCollections = () => {
-  const config = useRuntimeConfig()
-  const supabase = createClient(
-    config.public.supabaseUrl as string,
-    config.public.supabaseAnonKey as string
-  )
+  // const config = useRuntimeConfig()
+  // const supabase = createClient(
+  //   config.public.supabaseUrl as string,
+  //   config.public.supabaseAnonKey as string
+  // )
   const collectionsStore = useCollectionsStore()
 
   // Вспомогательная функция для получения текущего пользователя
@@ -49,7 +49,7 @@ export const useCollections = () => {
     description?: string
     color?: string
     icon?: string
-    parent_id?: string
+    parent_id?: string | null
     is_public?: boolean
     is_favorite?: boolean
     default_sort?: string

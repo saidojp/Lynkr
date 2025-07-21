@@ -66,6 +66,9 @@ importers:
       '@unocss/nuxt':
         specifier: ^66.3.3
         version: 66.3.3(magicast@0.3.5)(postcss@8.5.6)(vite@7.0.5(@types/node@24.0.14)(jiti@2.4.2)(terser@5.43.1)(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3))(webpack@5.100.2(esbuild@0.25.6))
+      '@unocss/preset-icons':
+        specifier: ^66.3.3
+        version: 66.3.3
       '@vueuse/nuxt':
         specifier: ^13.5.0
         version: 13.5.0(magicast@0.3.5)(nuxt@4.0.0(@netlify/blobs@9.1.2)(@parcel/watcher@2.5.1)(@types/node@24.0.14)(@vue/compiler-sfc@3.5.17)(db0@0.3.2)(eslint@9.31.0(jiti@2.4.2))(ioredis@5.6.1)(magicast@0.3.5)(optionator@0.9.4)(rollup@4.45.1)(terser@5.43.1)(typescript@5.8.3)(vite@7.0.5(@types/node@24.0.14)(jiti@2.4.2)(terser@5.43.1)(yaml@2.8.0))(vue-tsc@3.0.1(typescript@5.8.3))(yaml@2.8.0))(vue@3.5.17(typescript@5.8.3))
