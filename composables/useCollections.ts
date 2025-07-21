@@ -269,17 +269,17 @@ export const useCollections = () => {
     let currentId: string | null = collectionId
 
     while (currentId) {
-      const { data: collection, error } = await supabase
+      const { data: collection, error } = (await supabase
         .from('collections')
         .select('*')
         .eq('id', currentId)
         .eq('user_id', user.id)
-        .single()
+        .single()) as { data: Collection | null; error: any }
 
       if (error || !collection) break
 
       path.unshift(collection)
-      currentId = collection.parent_id
+      currentId = collection.parent_id || null
     }
 
     return path
@@ -294,17 +294,17 @@ export const useCollections = () => {
     let currentParentId: string | null = parentId
 
     while (currentParentId && depth < 3) {
-      const { data: parent, error } = await supabase
+      const { data: parent, error } = (await supabase
         .from('collections')
         .select('parent_id')
         .eq('id', currentParentId)
         .eq('user_id', user.id)
-        .single()
+        .single()) as { data: { parent_id: string | null } | null; error: any }
 
       if (error || !parent) break
 
       depth++
-      currentParentId = parent.parent_id
+      currentParentId = parent.parent_id || null
     }
 
     return depth
