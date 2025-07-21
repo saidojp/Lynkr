@@ -300,7 +300,7 @@ export const useCollectionsStore = defineStore('collections', {
     // Создать коллекцию
     async createCollection(collectionData: {
       name: string
-      description?: string
+      description?: string | null
       color?: string
       icon?: string
       parent_id?: string | null

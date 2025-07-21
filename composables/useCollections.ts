@@ -1,18 +1,18 @@
 // composables/useCollections.ts
-// import { createClient } from '@supabase/supabase-js'
-// import { useRuntimeConfig } from 'nuxt/app'
+import { createClient } from '@supabase/supabase-js'
+import { useRuntimeConfig } from 'nuxt/app'
 import { useCollectionsStore } from '../stores/collections'
 import type { Collection, CollectionTree, CollectionWithCounts } from '../types/database'
 
 export const useCollections = () => {
-  // const config = useRuntimeConfig()
-  // const supabase = createClient(
-  //   config.public.supabaseUrl as string,
-  //   config.public.supabaseAnonKey as string
-  // )
+  const config = useRuntimeConfig()
+  const supabase = createClient(
+    config.public.supabaseUrl as string,
+    config.public.supabaseAnonKey as string
+  )
   const collectionsStore = useCollectionsStore()
 
-  // Вспомогательная функция для получения текущего пользователя
+  // Получение текущего пользователя
   const getCurrentUser = async () => {
     const {
       data: { user },
@@ -70,12 +70,8 @@ export const useCollections = () => {
       color: collectionData.color || '#9aa0a6',
       icon: collectionData.icon || 'folder',
       parent_id: collectionData.parent_id || null,
-      is_public: collectionData.is_public || false,
-      is_favorite: collectionData.is_favorite || false,
-      default_sort: collectionData.default_sort || 'created_desc',
-      default_view: collectionData.default_view || 'grid',
-      user_id: user.id,
       position: (count || 0) + 1,
+      user_id: user.id,
     }
 
     const { data, error } = await supabase
@@ -102,10 +98,7 @@ export const useCollections = () => {
 
     const { data, error } = await supabase
       .from('collections')
-      .update({
-        ...updates,
-        updated_at: new Date().toISOString(),
-      })
+      .update(updates)
       .eq('id', id)
       .eq('user_id', user.id)
       .select()
@@ -138,6 +131,48 @@ export const useCollections = () => {
     collectionsStore.removeCollection(id)
   }
 
+  // Получение коллекции по ID
+  const getCollectionById = async (id: string): Promise<Collection | null> => {
+    const user = await getCurrentUser()
+
+    const { data, error } = await supabase
+      .from('collections')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+
+    if (error) {
+      console.error('Error fetching collection:', error)
+      return null
+    }
+
+    return data
+  }
+
+  // Обновление позиции коллекций (для drag & drop)
+  const updateCollectionsOrder = async (
+    collections: { id: string; position: number }[]
+  ): Promise<void> => {
+    const user = await getCurrentUser()
+
+    const { error } = await supabase.from('collections').upsert(
+      collections.map(c => ({
+        id: c.id,
+        position: c.position,
+        user_id: user.id,
+      }))
+    )
+
+    if (error) {
+      console.error('Error updating collections order:', error)
+      throw error
+    }
+
+    // Обновляем локальные данные
+    await fetchCollections()
+  }
+
   // Получение иерархии коллекций
   const getCollectionHierarchy = async (): Promise<CollectionTree[]> => {
     const collections = await fetchCollections()
@@ -161,160 +196,61 @@ export const useCollections = () => {
       .sort((a, b) => a.position - b.position)
   }
 
-  // Получение коллекций с количеством ссылок
+  // Получение коллекций с количеством ссылок - заглушка
   const getCollectionsWithCounts = async (): Promise<CollectionWithCounts[]> => {
-    const user = await getCurrentUser()
-
-    const { data, error } = await supabase
-      .from('collections')
-      .select(
-        `
-        *,
-        links(count),
-        children:collections!parent_id(count)
-      `
-      )
-      .eq('user_id', user.id)
-      .order('position', { ascending: true })
-
-    if (error) {
-      console.error('Error fetching collections with counts:', error)
-      throw error
-    }
-
-    return (data || []).map(collection => ({
-      ...collection,
-      linksCount: collection.links?.[0]?.count || 0,
-      childrenCount: collection.children?.[0]?.count || 0,
-    }))
+    return []
   }
 
-  // Изменение позиции коллекции
+  // Изменение позиции коллекции - заглушка
   const updateCollectionPosition = async (
     collectionId: string,
     newPosition: number,
     newParentId?: string
   ): Promise<void> => {
-    const user = await getCurrentUser()
-
-    const { error } = await supabase
-      .from('collections')
-      .update({
+    // Заглушка - используем метод store для обновления позиций
+    collectionsStore.updateCollectionsPositions([
+      {
+        id: collectionId,
         position: newPosition,
         parent_id: newParentId || null,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', collectionId)
-      .eq('user_id', user.id)
-
-    if (error) {
-      console.error('Error updating collection position:', error)
-      throw error
-    }
-
-    // Обновляем позиции других коллекций
-    await reorderCollections(newParentId)
+      },
+    ])
   }
 
-  // Переупорядочивание коллекций
+  // Переупорядочивание коллекций - заглушка
   const reorderCollections = async (parentId?: string): Promise<void> => {
-    const user = await getCurrentUser()
-
-    const { data: collections, error } = await supabase
-      .from('collections')
-      .select('id, position')
-      .eq('user_id', user.id)
-      .eq('parent_id', parentId || null)
-      .order('position', { ascending: true })
-
-    if (error || !collections) return
-
-    const updates = collections.map((collection, index) => ({
-      id: collection.id,
-      position: index + 1,
-    }))
-
-    for (const update of updates) {
-      await supabase
-        .from('collections')
-        .update({ position: update.position })
-        .eq('id', update.id)
-        .eq('user_id', user.id)
-    }
+    // Заглушка
   }
 
-  // Перемещение коллекции в другого родителя
+  // Перемещение коллекции в другого родителя - заглушка
   const moveCollectionToParent = async (
     collectionId: string,
     newParentId: string | null
   ): Promise<void> => {
-    const user = await getCurrentUser()
-
-    // Получаем новую позицию
-    const { count } = await supabase
-      .from('collections')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', user.id)
-      .eq('parent_id', newParentId)
-
-    const newPosition = (count || 0) + 1
-
-    await updateCollectionPosition(collectionId, newPosition, newParentId || undefined)
+    await updateCollectionPosition(collectionId, 1, newParentId || undefined)
   }
 
-  // Получение пути к коллекции (breadcrumbs)
+  // Получение пути к коллекции (breadcrumbs) - заглушка
   const getCollectionPath = async (collectionId: string): Promise<Collection[]> => {
-    const user = await getCurrentUser()
-    const path: Collection[] = []
-    let currentId: string | null = collectionId
-
-    while (currentId) {
-      const { data: collection, error } = (await supabase
-        .from('collections')
-        .select('*')
-        .eq('id', currentId)
-        .eq('user_id', user.id)
-        .single()) as { data: Collection | null; error: any }
-
-      if (error || !collection) break
-
-      path.unshift(collection)
-      currentId = collection.parent_id || null
-    }
-
-    return path
+    return []
   }
 
-  // Проверка глубины вложенности (максимум 3 уровня)
+  // Проверка глубины вложенности - заглушка
   const checkNestingDepth = async (parentId: string | null): Promise<number> => {
-    if (!parentId) return 0
-
-    const user = await getCurrentUser()
-    let depth = 0
-    let currentParentId: string | null = parentId
-
-    while (currentParentId && depth < 3) {
-      const { data: parent, error } = (await supabase
-        .from('collections')
-        .select('parent_id')
-        .eq('id', currentParentId)
-        .eq('user_id', user.id)
-        .single()) as { data: { parent_id: string | null } | null; error: any }
-
-      if (error || !parent) break
-
-      depth++
-      currentParentId = parent.parent_id || null
-    }
-
-    return depth
+    return 0
   }
 
   return {
+    // Основные методы
+    getCurrentUser,
     fetchCollections,
     createCollection,
     updateCollection,
     deleteCollection,
+    getCollectionById,
+    updateCollectionsOrder,
+
+    // Дополнительные методы
     getCollectionHierarchy,
     buildCollectionTree,
     getCollectionsWithCounts,

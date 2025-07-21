@@ -12,7 +12,18 @@ export default defineNuxtConfig({
   // Use UnoCSS reset only, removing Tailwind reset to avoid conflicts
   css: ['@unocss/reset/tailwind-compat.css', '~/assets/css/main.css'],
 
-  modules: ['@nuxt/eslint', '@pinia/nuxt', '@unocss/nuxt', '@vueuse/nuxt'],
+  modules: ['@nuxt/eslint', '@pinia/nuxt', '@unocss/nuxt', '@vueuse/nuxt', '@nuxtjs/supabase'],
+
+  // Конфигурация Supabase
+  supabase: {
+    url: process.env.SUPABASE_URL,
+    key: process.env.SUPABASE_ANON_KEY,
+    redirectOptions: {
+      login: '/auth/login',
+      callback: '/dashboard',
+      exclude: ['/', '/auth/login', '/auth/register'],
+    },
+  },
 
   // Настройки приложения
   app: {
@@ -31,8 +42,7 @@ export default defineNuxtConfig({
   // Настройки рантайма
   runtimeConfig: {
     public: {
-      supabaseUrl: process.env.SUPABASE_URL,
-      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+      appUrl: process.env.NUXT_PUBLIC_APP_URL,
     },
   },
 })

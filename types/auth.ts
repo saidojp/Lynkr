@@ -8,14 +8,18 @@ export interface LoginCredentials {
 export interface RegisterCredentials {
   email: string
   password: string
-  name: string
+  firstName: string
+  lastName: string
 }
 
 export interface AuthUser {
   id: string
   email: string
-  name?: string
-  avatar_url?: string
+  firstName: string
+  lastName: string
+  emailConfirmed: boolean
+  createdAt: string
+  updatedAt: string
 }
 
 export interface AuthState {

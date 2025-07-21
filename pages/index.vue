@@ -1,14 +1,59 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <template>
-  <div class="home-container">
-    <div class="hero-section">
-      <h1 class="hero-title">Welcome to <span class="brand">Lynkr</span></h1>
-      <p class="hero-subtitle">Organize and manage your collections with ease</p>
+  <div class="min-h-screen bg-orange-50 flex items-center justify-center p-4">
+    <div class="text-center max-w-2xl">
+      <!-- Logo/Brand -->
+      <div class="mb-8">
+        <h1 class="text-6xl font-black uppercase mb-4">
+          <span class="text-gray-900">Lynkr</span>
+        </h1>
+        <p class="text-xl font-mono text-gray-700">
+          Your Link Memory - Organize and save your web discoveries
+        </p>
+      </div>
 
-      <div class="hero-actions">
-        <NuxtLink to="/collections" class="manga-button manga-border manga-hover">
-          Browse Collections
+      <!-- Auth Actions -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+        <NuxtLink
+          to="/auth/login"
+          class="px-8 py-4 bg-blue-400 border-2 border-gray-900 font-black uppercase hover:bg-blue-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
+        >
+          Login
         </NuxtLink>
+
+        <NuxtLink
+          to="/auth/register"
+          class="px-8 py-4 bg-green-400 border-2 border-gray-900 font-black uppercase hover:bg-green-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
+        >
+          Sign Up
+        </NuxtLink>
+      </div>
+
+      <!-- Features -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div class="text-3xl mb-4">📁</div>
+          <h3 class="font-black uppercase mb-2">Organize</h3>
+          <p class="font-mono text-sm text-gray-600">
+            Create collections to organize your links by topic, project, or any way you like
+          </p>
+        </div>
+
+        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div class="text-3xl mb-4">🔖</div>
+          <h3 class="font-black uppercase mb-2">Save</h3>
+          <p class="font-mono text-sm text-gray-600">
+            Quickly save links with descriptions and tags for easy retrieval later
+          </p>
+        </div>
+
+        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <div class="text-3xl mb-4">🎨</div>
+          <h3 class="font-black uppercase mb-2">Customize</h3>
+          <p class="font-mono text-sm text-gray-600">
+            Personalize your collections with colors, icons, and custom organization
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -16,7 +61,7 @@
 
 <script setup lang="ts">
 useHead({
-  title: 'Home',
+  title: 'Lynkr - Your Link Memory',
 })
 </script>
 
