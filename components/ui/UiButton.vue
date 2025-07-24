@@ -1,9 +1,9 @@
 <template>
   <button
     :class="[
-      'inline-flex items-center justify-center font-medium transition-colors',
-      'focus:outline-none focus:ring-2 focus:ring-offset-2',
-      'disabled:opacity-50 disabled:cursor-not-allowed',
+      'inline-flex items-center justify-center font-medium transition-all duration-200',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400 focus-visible:ring-offset-2',
+      'disabled:pointer-events-none disabled:opacity-50',
       sizeClasses,
       variantClasses,
       className,
@@ -19,35 +19,37 @@
 import { computed } from 'vue'
 
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  size?: 'default' | 'sm' | 'lg' | 'icon'
   disabled?: boolean
   className?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'md',
+  variant: 'default',
+  size: 'default',
   disabled: false,
   className: '',
 })
 
 const sizeClasses = computed(() => {
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm rounded-md',
-    md: 'px-4 py-2 text-sm rounded-lg',
-    lg: 'px-6 py-3 text-base rounded-lg',
+    default: 'h-10 px-4 py-2 text-sm rounded-md',
+    sm: 'h-9 px-3 text-xs rounded-md',
+    lg: 'h-11 px-8 text-base rounded-md',
+    icon: 'h-10 w-10 rounded-md',
   }
   return sizes[props.size]
 })
 
 const variantClasses = computed(() => {
   const variants = {
-    primary: 'bg-primary-900 hover:bg-primary-800 text-white focus:ring-primary-500',
-    secondary: 'bg-primary-100 hover:bg-primary-200 text-primary-900 focus:ring-primary-500',
-    ghost: 'hover:bg-primary-100 text-primary-900 focus:ring-primary-500',
-    outline:
-      'border border-primary-300 hover:bg-primary-50 text-primary-900 focus:ring-primary-500',
+    default: 'bg-zinc-900 text-zinc-50 hover:bg-zinc-800 shadow hover:shadow-md',
+    destructive: 'bg-red-500 text-zinc-50 hover:bg-red-600 shadow hover:shadow-md',
+    outline: 'border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900',
+    secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
+    ghost: 'hover:bg-zinc-100 hover:text-zinc-900',
+    link: 'text-zinc-900 underline-offset-4 hover:underline',
   }
   return variants[props.variant]
 })

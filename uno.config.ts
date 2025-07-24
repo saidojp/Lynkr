@@ -24,35 +24,87 @@ export default defineConfig({
 
   theme: {
     colors: {
-      // Основная палитра (ч/б стиль с акцентами)
+      // Zinc palette (shadcn/ui style)
+      zinc: {
+        50: '#fafafa',
+        100: '#f4f4f5',
+        200: '#e4e4e7',
+        300: '#d4d4d8',
+        400: '#a1a1aa',
+        500: '#71717a',
+        600: '#52525b',
+        700: '#3f3f46',
+        800: '#27272a',
+        900: '#18181b',
+        950: '#09090b',
+      },
+
+      // Primary colors (slate-based)
       primary: {
-        50: '#f8f9fa',
-        100: '#f1f3f4',
-        200: '#e8eaed',
-        300: '#dadce0',
-        400: '#bdc1c6',
-        500: '#9aa0a6',
-        600: '#80868b',
-        700: '#5f6368',
-        800: '#3c4043',
-        900: '#202124',
+        50: '#f8fafc',
+        100: '#f1f5f9',
+        200: '#e2e8f0',
+        300: '#cbd5e1',
+        400: '#94a3b8',
+        500: '#64748b',
+        600: '#475569',
+        700: '#334155',
+        800: '#1e293b',
+        900: '#0f172a',
+        950: '#020617',
       },
 
-      // Акцентные цвета
+      // Border and background
+      border: '#e2e8f0',
+      input: '#ffffff',
+      ring: '#64748b',
+      background: '#ffffff',
+      foreground: '#0f172a',
+
+      // Semantic colors
+      muted: {
+        DEFAULT: '#f1f5f9',
+        foreground: '#64748b',
+      },
       accent: {
-        blue: '#1a73e8',
-        green: '#34a853',
-        yellow: '#fbbc04',
-        red: '#ea4335',
-        purple: '#9c27b0',
-        orange: '#ff9800',
+        DEFAULT: '#f1f5f9',
+        foreground: '#0f172a',
+      },
+      destructive: {
+        DEFAULT: '#ef4444',
+        foreground: '#ffffff',
       },
 
-      // Семантические цвета
-      success: '#34a853',
-      warning: '#fbbc04',
-      error: '#ea4335',
-      info: '#1a73e8',
+      // Accent colors
+      blue: '#3b82f6',
+      green: '#10b981',
+      yellow: '#f59e0b',
+      red: '#ef4444',
+      purple: '#8b5cf6',
+      orange: '#f97316',
+    },
+
+    // Rounded corners (more generous)
+    borderRadius: {
+      none: '0px',
+      sm: '0.375rem',
+      DEFAULT: '0.5rem',
+      md: '0.75rem',
+      lg: '1rem',
+      xl: '1.5rem',
+      '2xl': '2rem',
+      full: '9999px',
+    },
+
+    // Box shadows (softer)
+    boxShadow: {
+      sm: '0 1px 2px 0 rgb(0 0 0 / 0.05)',
+      DEFAULT: '0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)',
+      md: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+      lg: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+      xl: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)',
+      '2xl': '0 25px 50px -12px rgb(0 0 0 / 0.25)',
+      none: '0 0 #0000',
     },
 
     fontFamily: {
@@ -61,20 +113,34 @@ export default defineConfig({
     },
 
     animation: {
-      'fade-in': 'fadeIn 0.3s ease-in-out',
-      'slide-up': 'slideUp 0.3s ease-out',
-      'slide-down': 'slideDown 0.3s ease-out',
+      'fade-in': 'fadeIn 0.2s ease-in-out',
+      'slide-up': 'slideUp 0.2s ease-out',
+      'slide-down': 'slideDown 0.2s ease-out',
+      'scale-in': 'scaleIn 0.2s ease-out',
     },
   },
 
   shortcuts: {
-    // Утилиты для быстрой стилизации
+    // Modern button styles
     'btn-primary':
-      'bg-primary-900 hover:bg-primary-800 text-white px-4 py-2 rounded-lg font-medium transition-colors',
+      'bg-zinc-900 hover:bg-zinc-800 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md',
     'btn-secondary':
-      'bg-primary-100 hover:bg-primary-200 text-primary-900 px-4 py-2 rounded-lg font-medium transition-colors',
-    card: 'bg-white dark:bg-primary-800 border border-primary-200 dark:border-primary-700 rounded-xl shadow-sm',
-    input:
-      'border border-primary-300 dark:border-primary-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-accent-blue',
+      'bg-zinc-100 hover:bg-zinc-200 text-zinc-900 px-4 py-2 rounded-lg font-medium transition-all duration-200',
+    'btn-ghost':
+      'hover:bg-zinc-100 text-zinc-700 px-4 py-2 rounded-lg font-medium transition-all duration-200',
+    'btn-outline':
+      'border border-zinc-300 hover:bg-zinc-50 text-zinc-700 px-4 py-2 rounded-lg font-medium transition-all duration-200',
+
+    // Modern card styles
+    'card': 'bg-white border border-zinc-200 rounded-xl shadow-sm hover:shadow-md transition-all duration-200',
+    'card-hover': 'hover:border-zinc-300 hover:shadow-lg transition-all duration-200',
+
+    // Modern input styles
+    'input-field':
+      'border border-zinc-300 bg-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-transparent transition-all duration-200',
+
+    // Layout helpers
+    'sidebar': 'bg-zinc-50 border-r border-zinc-200',
+    'header': 'bg-white border-b border-zinc-200',
   },
 })
