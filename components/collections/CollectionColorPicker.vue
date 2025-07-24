@@ -3,29 +3,29 @@
     <!-- Предварительный просмотр выбранного цвета -->
     <div class="flex items-center space-x-3">
       <div
-        class="w-6 h-6 border-2 border-black rounded-sm"
+        class="w-6 h-6 border border-zinc-300 rounded-md shadow-sm"
         :style="{ backgroundColor: currentColor }"
       ></div>
-      <span class="text-sm font-medium uppercase">{{ getColorName(currentColor) }}</span>
+      <span class="text-sm font-medium text-zinc-900">{{ getColorName(currentColor) }}</span>
     </div>
 
     <!-- Палитра цветов -->
     <div class="grid grid-cols-4 gap-3">
       <button
-        v-for="(color, key) in COLLECTION_COLORS"
-        :key="key"
+        v-for="colorObj in COLLECTION_COLORS"
+        :key="colorObj.name"
         type="button"
-        @click="selectColor(color)"
-        class="w-10 h-10 border-2 border-black rounded-sm transition-all duration-150 hover:scale-105 hover:shadow-md relative group"
-        :style="{ backgroundColor: color }"
+        @click="selectColor(colorObj.value)"
+        class="w-10 h-10 border border-zinc-300 rounded-md transition-all duration-150 hover:scale-105 hover:shadow-lg relative group"
+        :style="{ backgroundColor: colorObj.value }"
         :class="{
-          'ring-2 ring-offset-2 ring-black': currentColor === color,
+          'ring-2 ring-offset-2 ring-zinc-400': currentColor === colorObj.value,
         }"
-        :title="getColorName(color)"
+        :title="colorObj.name"
       >
         <!-- Чекмарк для выбранного цвета -->
         <div
-          v-if="currentColor === color"
+          v-if="currentColor === colorObj.value"
           class="absolute inset-0 flex items-center justify-center"
         >
           <svg
@@ -45,29 +45,29 @@
 
         <!-- Tooltip для hover -->
         <div
-          class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-10"
+          class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-zinc-900 text-white text-xs px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-10"
         >
-          {{ getColorName(color) }}
+          {{ colorObj.name }}
         </div>
       </button>
     </div>
 
     <!-- Кастомный цвет -->
-    <div class="border-t-2 border-black pt-3">
-      <label class="block text-xs font-medium uppercase mb-2">Кастомный цвет</label>
+    <div class="border-t border-zinc-200 pt-3">
+      <label class="block text-xs font-medium text-zinc-900 mb-2">Custom Color</label>
       <div class="flex items-center space-x-3">
         <input
           v-model="customColor"
           type="color"
           @input="selectColor(customColor)"
-          class="w-10 h-10 border-2 border-black rounded-sm cursor-pointer"
+          class="w-10 h-10 border border-zinc-300 rounded-md cursor-pointer"
         />
         <input
           v-model="customColor"
           type="text"
           @input="selectColor(customColor)"
-          placeholder="#9aa0a6"
-          class="flex-1 p-2 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-xs uppercase"
+          placeholder="#71717a"
+          class="flex-1 px-3 py-2 border border-zinc-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 text-xs uppercase placeholder:text-zinc-400"
           pattern="^#[0-9A-Fa-f]{6}$"
         />
       </div>
@@ -77,14 +77,14 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import { COLLECTION_COLORS, COLOR_NAMES } from '../../utils/constants'
+import { COLLECTION_COLORS } from '../../utils/icons'
 
 interface Props {
   currentColor?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  currentColor: '#9aa0a6',
+  currentColor: '#71717a',
 })
 
 const emit = defineEmits<{
@@ -95,7 +95,8 @@ const customColor = ref(props.currentColor)
 
 // Получить название цвета
 const getColorName = (color: string): string => {
-  return COLOR_NAMES[color as keyof typeof COLOR_NAMES] || 'Кастомный'
+  const colorObj = COLLECTION_COLORS.find(c => c.value === color)
+  return colorObj ? colorObj.name : 'Custom'
 }
 
 // Выбор цвета

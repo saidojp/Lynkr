@@ -1,64 +1,64 @@
 <template>
-  <nav class="flex items-center space-x-2 py-3" aria-label="Навигация по коллекциям">
+  <nav class="flex items-center space-x-2 py-3" aria-label="Collection Navigation">
     <!-- Домашняя страница -->
-    <button
+    <UiButton
+      variant="outline"
+      size="sm"
       @click="$emit('navigate', null)"
-      class="flex items-center space-x-2 px-3 py-2 border-2 border-black bg-white text-sm font-medium uppercase hover:bg-gray-100 transition-colors duration-150"
-      :class="{ 'bg-black text-white': !currentCollectionId }"
+      :class="{ 'bg-zinc-900 text-white border-zinc-900': !currentCollectionId }"
     >
-      <Home class="w-4 h-4" />
-      <span>Главная</span>
-    </button>
+      <Home class="w-4 h-4 mr-2" />
+      <span>Home</span>
+    </UiButton>
 
     <!-- Разделитель -->
-    <ChevronRight v-if="breadcrumbs.length > 0" class="w-4 h-4 text-gray-500" />
+    <ChevronRight v-if="breadcrumbs.length > 0" class="w-4 h-4 text-zinc-500" />
 
     <!-- Хлебные крошки -->
     <template v-for="(breadcrumb, index) in breadcrumbs" :key="breadcrumb.id">
-      <button
+      <UiButton
+        variant="outline"
+        size="sm"
         @click="$emit('navigate', breadcrumb.id)"
-        class="flex items-center space-x-2 px-3 py-2 border-2 border-black bg-white text-sm font-medium uppercase hover:bg-gray-100 transition-colors duration-150 max-w-xs"
         :class="{
-          'bg-black text-white': currentCollectionId === breadcrumb.id,
-          truncate: breadcrumb.name.length > 20,
+          'bg-zinc-900 text-white border-zinc-900': currentCollectionId === breadcrumb.id,
         }"
+        class="max-w-xs"
         :title="breadcrumb.name"
       >
         <!-- Иконка коллекции -->
         <div
-          class="w-4 h-4 border-l-2 flex items-center justify-center"
-          :style="{ borderLeftColor: breadcrumb.color || '#9aa0a6' }"
+          class="w-4 h-4 border-l-2 rounded-sm flex items-center justify-center mr-2"
+          :style="{ borderLeftColor: breadcrumb.color || '#71717a' }"
         >
           <component :is="getIconComponent(breadcrumb.icon)" class="w-3 h-3" />
         </div>
 
         <span class="truncate">{{ breadcrumb.name }}</span>
-      </button>
+      </UiButton>
 
       <!-- Разделитель между крошками -->
-      <ChevronRight v-if="index < breadcrumbs.length - 1" class="w-4 h-4 text-gray-500" />
+      <ChevronRight v-if="index < breadcrumbs.length - 1" class="w-4 h-4 text-zinc-500" />
     </template>
 
     <!-- Действия -->
     <div class="flex items-center space-x-2 ml-auto">
       <!-- Кнопка "Наверх" если не на главной -->
-      <button
+      <UiButton
         v-if="breadcrumbs.length > 0"
+        variant="outline"
+        size="icon"
         @click="goUp"
-        class="p-2 border-2 border-black bg-white text-sm hover:bg-gray-100 transition-colors duration-150"
-        title="Вверх на один уровень"
+        title="Go up one level"
       >
         <ArrowUp class="w-4 h-4" />
-      </button>
+      </UiButton>
 
       <!-- Кнопка создания подколлекции -->
-      <button
-        @click="$emit('create-subcollection', currentCollectionId)"
-        class="flex items-center space-x-2 px-3 py-2 border-2 border-black bg-black text-white text-sm font-medium uppercase hover:bg-gray-800 transition-colors duration-150"
-      >
-        <Plus class="w-4 h-4" />
-        <span>Создать</span>
-      </button>
+      <UiButton @click="$emit('create-subcollection', currentCollectionId)">
+        <Plus class="w-4 h-4 mr-2" />
+        <span>Create</span>
+      </UiButton>
     </div>
   </nav>
 </template>
@@ -67,33 +67,10 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../../stores/collections'
+import UiButton from '../../ui/UiButton.vue'
+import { COLLECTION_ICONS, type IconKey } from '../../../utils/icons'
 import type { Collection } from '../../../types'
-import {
-  Home,
-  ChevronRight,
-  ArrowUp,
-  Plus,
-  Folder,
-  FolderOpen,
-  Star,
-  Heart,
-  Bookmark,
-  Tag,
-  Archive,
-  Globe,
-  Lock,
-  Coffee,
-  Briefcase,
-  User,
-  Settings,
-  Book,
-  Music,
-  Image,
-  Video,
-  Code,
-  Gamepad2,
-  ShoppingCart,
-} from 'lucide-vue-next'
+import { Home, ChevronRight, ArrowUp, Plus } from 'lucide-vue-next'
 
 interface Props {
   currentCollectionId?: string | null
@@ -110,31 +87,6 @@ const emit = defineEmits<{
 
 const collectionsStore = useCollectionsStore()
 
-// Компоненты иконок
-const iconComponents = {
-  folder: Folder,
-  'folder-open': FolderOpen,
-  star: Star,
-  heart: Heart,
-  bookmark: Bookmark,
-  tag: Tag,
-  archive: Archive,
-  globe: Globe,
-  lock: Lock,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  home: Home,
-  user: User,
-  settings: Settings,
-  book: Book,
-  music: Music,
-  image: Image,
-  video: Video,
-  code: Code,
-  gamepad2: Gamepad2,
-  'shopping-cart': ShoppingCart,
-}
-
 // Хлебные крошки для текущей коллекции
 const breadcrumbs = computed((): Collection[] => {
   if (!props.currentCollectionId) return []
@@ -143,7 +95,7 @@ const breadcrumbs = computed((): Collection[] => {
 
 // Получить компонент иконки
 const getIconComponent = (iconName?: string) => {
-  return iconComponents[iconName as keyof typeof iconComponents] || Folder
+  return COLLECTION_ICONS[iconName as IconKey]?.component || COLLECTION_ICONS.folder.component
 }
 
 // Подняться на уровень вверх

@@ -2,39 +2,37 @@
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <!-- Название коллекции -->
     <div>
-      <label class="block text-sm font-bold uppercase mb-2"> Название коллекции * </label>
-      <input
+      <label class="block text-sm font-medium text-zinc-900 mb-2">Collection Name *</label>
+      <UiInput
         v-model="form.name"
         type="text"
         required
-        placeholder="Введите название коллекции"
-        class="w-full p-3 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm"
-        :class="{ 'border-red-500': errors.name }"
+        placeholder="Enter collection name"
+        :class="{ 'border-red-300 focus:border-red-500': errors.name }"
       />
-      <p v-if="errors.name" class="text-red-500 text-xs mt-1">
+      <p v-if="errors.name" class="text-red-600 text-xs mt-1">
         {{ errors.name }}
       </p>
     </div>
 
     <!-- Описание коллекции -->
     <div>
-      <label class="block text-sm font-bold uppercase mb-2"> Описание (опционально) </label>
-      <textarea
+      <label class="block text-sm font-medium text-zinc-900 mb-2">Description (optional)</label>
+      <UiTextarea
         v-model="form.description"
         rows="3"
-        placeholder="Краткое описание коллекции"
-        class="w-full p-3 border-2 border-black bg-white resize-none focus:outline-none focus:ring-2 focus:ring-black text-sm"
-      ></textarea>
+        placeholder="Brief description of the collection"
+      />
     </div>
 
     <!-- Родительская коллекция (для подколлекций) -->
     <div v-if="availableParents.length > 0">
-      <label class="block text-sm font-bold uppercase mb-2"> Родительская коллекция </label>
+      <label class="block text-sm font-medium text-zinc-900 mb-2">Parent Collection</label>
       <select
         v-model="form.parent_id"
-        class="w-full p-3 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm"
+        class="w-full px-3 py-2 border border-zinc-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 text-sm"
       >
-        <option value="">Корневой уровень</option>
+        <option value="">Root Level</option>
         <option v-for="parent in availableParents" :key="parent.id" :value="parent.id">
           {{ parent.level_indicator }}{{ parent.name }}
         </option>
@@ -43,84 +41,87 @@
 
     <!-- Выбор иконки -->
     <div>
-      <label class="block text-sm font-bold uppercase mb-2"> Иконка коллекции </label>
+      <label class="block text-sm font-medium text-zinc-900 mb-2">Collection Icon</label>
       <CollectionIconPicker v-model="form.icon" :current-icon="form.icon" />
     </div>
 
     <!-- Выбор цвета -->
     <div>
-      <label class="block text-sm font-bold uppercase mb-2"> Цвет коллекции </label>
+      <label class="block text-sm font-medium text-zinc-900 mb-2">Collection Color</label>
       <CollectionColorPicker v-model="form.color" :current-color="form.color" />
     </div>
 
     <!-- Настройки видимости -->
     <div class="space-y-4">
-      <h3 class="text-sm font-bold uppercase">Настройки видимости</h3>
+      <h3 class="text-sm font-semibold text-zinc-900">Visibility Settings</h3>
 
       <!-- Публичная коллекция -->
-      <div class="flex items-center space-x-3">
+      <div class="flex items-start space-x-3">
         <input
           v-model="form.is_public"
           type="checkbox"
           id="is_public"
-          class="w-4 h-4 border-2 border-black bg-white focus:ring-2 focus:ring-black checked:bg-black"
+          class="mt-1 w-4 h-4 border border-zinc-300 rounded bg-white focus:ring-2 focus:ring-zinc-500 checked:bg-zinc-900 checked:border-zinc-900"
         />
         <label for="is_public" class="text-sm">
-          <span class="font-medium">Публичная коллекция</span>
-          <p class="text-xs text-gray-600 mt-1">
-            Другие пользователи смогут видеть эту коллекцию и ее содержимое
+          <span class="font-medium text-zinc-900">Public Collection</span>
+          <p class="text-xs text-zinc-600 mt-1">
+            Other users will be able to see this collection and its contents
           </p>
         </label>
       </div>
 
       <!-- Избранная коллекция -->
-      <div class="flex items-center space-x-3">
+      <div class="flex items-start space-x-3">
         <input
           v-model="form.is_favorite"
           type="checkbox"
           id="is_favorite"
-          class="w-4 h-4 border-2 border-black bg-white focus:ring-2 focus:ring-black checked:bg-black"
+          class="mt-1 w-4 h-4 border border-zinc-300 rounded bg-white focus:ring-2 focus:ring-zinc-500 checked:bg-zinc-900 checked:border-zinc-900"
         />
         <label for="is_favorite" class="text-sm">
-          <span class="font-medium">Избранная коллекция</span>
-          <p class="text-xs text-gray-600 mt-1">Коллекция будет отображаться в разделе избранных</p>
+          <span class="font-medium text-zinc-900">Favorite Collection</span>
+          <p class="text-xs text-zinc-600 mt-1">
+            Collection will be displayed in the favorites section
+          </p>
         </label>
       </div>
     </div>
 
     <!-- Дополнительные настройки -->
     <div class="space-y-4">
-      <h3 class="text-sm font-bold uppercase">Дополнительные настройки</h3>
+      <h3 class="text-sm font-semibold text-zinc-900">Additional Settings</h3>
 
       <!-- Сортировка ссылок -->
       <div>
-        <label class="block text-sm font-medium mb-2"> Сортировка ссылок по умолчанию </label>
+        <label class="block text-sm font-medium text-zinc-900 mb-2">Default Link Sorting</label>
         <select
           v-model="form.default_sort"
-          class="w-full p-3 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm"
+          class="w-full px-3 py-2 border border-zinc-300 bg-white rounded-md focus:outline-none focus:ring-2 focus:ring-zinc-500 focus:border-zinc-500 text-sm"
         >
-          <option value="created_desc">Сначала новые</option>
-          <option value="created_asc">Сначала старые</option>
-          <option value="name_asc">По алфавиту (А-Я)</option>
-          <option value="name_desc">По алфавиту (Я-А)</option>
-          <option value="visits_desc">По популярности</option>
+          <option value="created_desc">Newest First</option>
+          <option value="created_asc">Oldest First</option>
+          <option value="name_asc">Alphabetical (A-Z)</option>
+          <option value="name_desc">Alphabetical (Z-A)</option>
+          <option value="visits_desc">By Popularity</option>
         </select>
       </div>
 
       <!-- Представление по умолчанию -->
       <div>
-        <label class="block text-sm font-medium mb-2"> Представление по умолчанию </label>
+        <label class="block text-sm font-medium text-zinc-900 mb-2">Default View</label>
         <div class="grid grid-cols-3 gap-3">
-          <button
+          <UiButton
             type="button"
+            variant="outline"
+            size="sm"
             @click="form.default_view = 'grid'"
-            class="p-3 border-2 border-black bg-white text-center transition-colors duration-150 hover:bg-gray-100"
             :class="{
-              'bg-black text-white': form.default_view === 'grid',
-              'hover:bg-black hover:text-white': form.default_view !== 'grid',
+              'bg-zinc-900 text-white border-zinc-900': form.default_view === 'grid',
             }"
+            class="flex flex-col items-center p-3"
           >
-            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -128,19 +129,20 @@
                 d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
               ></path>
             </svg>
-            <span class="text-xs">Сетка</span>
-          </button>
+            <span class="text-xs">Grid</span>
+          </UiButton>
 
-          <button
+          <UiButton
             type="button"
+            variant="outline"
+            size="sm"
             @click="form.default_view = 'list'"
-            class="p-3 border-2 border-black bg-white text-center transition-colors duration-150 hover:bg-gray-100"
             :class="{
-              'bg-black text-white': form.default_view === 'list',
-              'hover:bg-black hover:text-white': form.default_view !== 'list',
+              'bg-zinc-900 text-white border-zinc-900': form.default_view === 'list',
             }"
+            class="flex flex-col items-center p-3"
           >
-            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -148,19 +150,20 @@
                 d="M4 6h16M4 10h16M4 14h16M4 18h16"
               ></path>
             </svg>
-            <span class="text-xs">Список</span>
-          </button>
+            <span class="text-xs">List</span>
+          </UiButton>
 
-          <button
+          <UiButton
             type="button"
+            variant="outline"
+            size="sm"
             @click="form.default_view = 'compact'"
-            class="p-3 border-2 border-black bg-white text-center transition-colors duration-150 hover:bg-gray-100"
             :class="{
-              'bg-black text-white': form.default_view === 'compact',
-              'hover:bg-black hover:text-white': form.default_view !== 'compact',
+              'bg-zinc-900 text-white border-zinc-900': form.default_view === 'compact',
             }"
+            class="flex flex-col items-center p-3"
           >
-            <svg class="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -168,62 +171,52 @@
                 d="M4 6h16M4 12h16M4 18h16"
               ></path>
             </svg>
-            <span class="text-xs">Компакт</span>
-          </button>
+            <span class="text-xs">Compact</span>
+          </UiButton>
         </div>
       </div>
     </div>
 
     <!-- Предварительный просмотр -->
-    <div class="border-2 border-black bg-gray-50 p-4">
-      <h3 class="text-sm font-bold uppercase mb-3">Предварительный просмотр</h3>
-      <div class="flex items-center space-x-3 p-3 bg-white border-2 border-black">
+    <UiCard>
+      <h3 class="text-sm font-semibold text-zinc-900 mb-3">Preview</h3>
+      <div class="flex items-center space-x-3 p-3 bg-zinc-50 border border-zinc-200 rounded-lg">
         <!-- Иконка -->
         <div
-          class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center"
-          :style="{ borderLeftColor: form.color, borderLeftWidth: '4px' }"
+          class="w-8 h-8 border border-zinc-300 bg-white rounded-md flex items-center justify-center"
+          :style="{ borderLeftColor: form.color, borderLeftWidth: '3px' }"
         >
-          <component :is="getIconComponent(form.icon)" class="w-4 h-4" />
+          <component :is="getIconComponent(form.icon)" class="w-4 h-4 text-zinc-600" />
         </div>
 
         <!-- Информация -->
         <div class="flex-1">
           <div class="flex items-center space-x-2">
-            <span class="font-bold text-sm uppercase">
-              {{ form.name || 'Название коллекции' }}
+            <span class="font-medium text-sm text-zinc-900">
+              {{ form.name || 'Collection Name' }}
             </span>
-            <span v-if="form.is_public" class="text-xs text-green-600">🌐</span>
-            <span v-if="form.is_favorite" class="text-xs text-red-500">❤️</span>
+            <span v-if="form.is_public" class="text-xs text-emerald-600">🌐</span>
+            <span v-if="form.is_favorite" class="text-xs text-rose-500">❤️</span>
           </div>
-          <p class="text-xs text-gray-600 mt-1">
-            {{ form.description || 'Описание коллекции' }}
+          <p class="text-xs text-zinc-600 mt-1">
+            {{ form.description || 'Collection description' }}
           </p>
         </div>
       </div>
-    </div>
+    </UiCard>
 
     <!-- Кнопки действий -->
     <div class="flex items-center justify-end space-x-3 pt-6">
-      <button
-        type="button"
-        @click="$emit('cancel')"
-        class="px-6 py-3 border-2 border-black bg-white text-sm font-bold uppercase hover:bg-gray-100 transition-colors duration-150"
-      >
-        Отмена
-      </button>
+      <UiButton type="button" variant="outline" @click="$emit('cancel')"> Cancel </UiButton>
 
-      <button
-        type="submit"
-        :disabled="!isFormValid || loading"
-        class="px-6 py-3 border-2 border-black bg-black text-white text-sm font-bold uppercase hover:bg-gray-800 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
+      <UiButton type="submit" :disabled="!isFormValid || loading">
         <span v-if="loading">
-          {{ isEdit ? 'Сохранение...' : 'Создание...' }}
+          {{ isEdit ? 'Saving...' : 'Creating...' }}
         </span>
         <span v-else>
-          {{ isEdit ? 'Сохранить изменения' : 'Создать коллекцию' }}
+          {{ isEdit ? 'Save Changes' : 'Create Collection' }}
         </span>
-      </button>
+      </UiButton>
     </div>
   </form>
 </template>
@@ -234,30 +227,12 @@ import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../stores/collections'
 import CollectionIconPicker from './CollectionIconPicker.vue'
 import CollectionColorPicker from './CollectionColorPicker.vue'
+import UiButton from '../ui/UiButton.vue'
+import UiInput from '../ui/UiInput.vue'
+import UiTextarea from '../ui/UiTextarea.vue'
+import UiCard from '../ui/UiCard.vue'
 import type { Collection, CollectionTree } from '../../types'
-import {
-  Folder,
-  FolderOpen,
-  Star,
-  Heart,
-  Bookmark,
-  Tag,
-  Archive,
-  Globe,
-  Lock,
-  Coffee,
-  Briefcase,
-  Home,
-  User,
-  Settings,
-  Book,
-  Music,
-  Image,
-  Video,
-  Code,
-  Gamepad2,
-  ShoppingCart,
-} from 'lucide-vue-next'
+import { COLLECTION_ICONS, type IconKey } from '../../utils/icons'
 
 interface Props {
   collection?: Collection | null
@@ -299,31 +274,6 @@ const errors = ref({
   name: '',
 })
 
-// Иконки
-const iconComponents = {
-  folder: Folder,
-  'folder-open': FolderOpen,
-  star: Star,
-  heart: Heart,
-  bookmark: Bookmark,
-  tag: Tag,
-  archive: Archive,
-  globe: Globe,
-  lock: Lock,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  home: Home,
-  user: User,
-  settings: Settings,
-  book: Book,
-  music: Music,
-  image: Image,
-  video: Video,
-  code: Code,
-  gamepad2: Gamepad2,
-  'shopping-cart': ShoppingCart,
-}
-
 // Вычисляемые свойства
 const availableParents = computed(() => {
   const flattenCollections = (
@@ -361,8 +311,9 @@ const isFormValid = computed(() => {
   return form.value.name.trim().length > 0 && !errors.value.name
 })
 
+// Получить компонент иконки
 const getIconComponent = (iconName?: string) => {
-  return iconComponents[iconName as keyof typeof iconComponents] || Folder
+  return COLLECTION_ICONS[iconName as IconKey]?.component || COLLECTION_ICONS.folder.component
 }
 
 // Валидация

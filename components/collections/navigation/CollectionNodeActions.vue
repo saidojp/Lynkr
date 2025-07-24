@@ -14,7 +14,7 @@
       <!-- Выпадающее меню -->
       <div
         v-if="showMenu"
-        class="absolute right-0 top-full mt-1 w-48 bg-white border-2 border-black shadow-lg z-50"
+        class="absolute right-0 top-full mt-1 w-48 bg-white border border-zinc-200 rounded-lg shadow-lg z-50"
         @click.stop
       >
         <div class="py-1">
@@ -122,6 +122,7 @@ const emit = defineEmits<{
   edit: []
   delete: []
   'create-subcollection': []
+  duplicate: []
 }>()
 
 const collectionsStore = useCollectionsStore()
@@ -159,7 +160,8 @@ const handleDelete = () => {
 
 const handleToggleFavorite = async () => {
   try {
-    await collectionsStore.editCollection(props.collection.id, {
+    collectionsStore.updateCollection({
+      id: props.collection.id,
       is_favorite: !props.collection.is_favorite,
     })
     showMenu.value = false
@@ -170,7 +172,8 @@ const handleToggleFavorite = async () => {
 
 const handleToggleVisibility = async () => {
   try {
-    await collectionsStore.editCollection(props.collection.id, {
+    collectionsStore.updateCollection({
+      id: props.collection.id,
       is_public: !props.collection.is_public,
     })
     showMenu.value = false
@@ -181,13 +184,9 @@ const handleToggleVisibility = async () => {
 
 const handleDuplicate = async () => {
   try {
-    await collectionsStore.createCollection({
-      name: `${props.collection.name} (копия)`,
-      description: props.collection.description,
-      color: props.collection.color,
-      icon: props.collection.icon,
-      parent_id: props.collection.parent_id,
-    })
+    // TODO: Implement duplication - need to add to store
+    console.log('Duplicate collection:', props.collection.name)
+    emit('duplicate')
     showMenu.value = false
   } catch (error) {
     console.error('Error duplicating collection:', error)

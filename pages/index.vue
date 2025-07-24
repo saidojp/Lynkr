@@ -14,18 +14,12 @@
 
       <!-- Auth Actions -->
       <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-        <NuxtLink
-          to="/auth/login"
-          class="px-8 py-4 bg-blue-400 border-2 border-gray-900 font-black uppercase hover:bg-blue-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
-        >
-          Login
+        <NuxtLink to="/auth/login">
+          <UiButton size="lg" class="w-full sm:w-auto"> Login </UiButton>
         </NuxtLink>
 
-        <NuxtLink
-          to="/auth/register"
-          class="px-8 py-4 bg-green-400 border-2 border-gray-900 font-black uppercase hover:bg-green-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
-        >
-          Sign Up
+        <NuxtLink to="/auth/register">
+          <UiButton variant="outline" size="lg" class="w-full sm:w-auto"> Sign Up </UiButton>
         </NuxtLink>
       </div>
 

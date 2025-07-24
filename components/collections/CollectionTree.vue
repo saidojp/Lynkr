@@ -1,111 +1,73 @@
 <template>
   <div class="collection-tree">
     <!-- Заголовок с действиями -->
-    <div class="flex items-center justify-between p-4 border-b-2 border-black">
-      <h2 class="font-bold text-lg uppercase tracking-wide">Коллекции</h2>
+    <div class="flex items-center justify-between p-4 border-b border-zinc-200">
+      <h2 class="font-semibold text-lg text-zinc-900">Collections</h2>
 
       <div class="flex items-center space-x-2">
         <!-- Кнопка создания новой коллекции -->
-        <button
+        <UiButton
+          variant="outline"
+          size="icon"
           @click="$emit('create-collection')"
-          class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-150"
-          title="Создать коллекцию"
+          title="Create Collection"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            ></path>
-          </svg>
-        </button>
+          <Plus class="w-4 h-4" />
+        </UiButton>
 
         <!-- Кнопка развернуть/свернуть все -->
-        <button
+        <UiButton
+          variant="outline"
+          size="icon"
           @click="toggleAllExpanded"
-          class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-150"
-          :title="allExpanded ? 'Свернуть все' : 'Развернуть все'"
+          :title="allExpanded ? 'Collapse All' : 'Expand All'"
         >
-          <svg
+          <ChevronDown
             class="w-4 h-4 transition-transform duration-200"
             :class="{ 'rotate-180': allExpanded }"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M19 9l-7 7-7-7"
-            ></path>
-          </svg>
-        </button>
+          />
+        </UiButton>
 
         <!-- Кнопка настроек -->
-        <button
+        <UiButton
+          variant="outline"
+          size="icon"
           @click="$emit('open-settings')"
-          class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-150"
-          title="Настройки коллекций"
+          title="Collection Settings"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-            ></path>
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-            ></path>
-          </svg>
-        </button>
+          >
+          <Settings class="w-4 h-4" />
+        </UiButton>
       </div>
     </div>
 
     <!-- Поиск по коллекциям -->
-    <div class="p-4 border-b-2 border-black">
+    <div class="p-4 border-b border-zinc-200">
       <div class="relative">
-        <input
+        <UiInput
           v-model="searchQuery"
           type="text"
-          placeholder="Поиск коллекций..."
-          class="w-full p-3 pr-10 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm"
+          placeholder="Search collections..."
+          class="pl-10"
         />
-        <svg
-          class="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-          ></path>
-        </svg>
+        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
       </div>
     </div>
 
     <!-- Статистика -->
-    <div class="p-4 border-b-2 border-black bg-gray-50">
+    <div class="p-4 border-b border-zinc-200 bg-zinc-50">
       <div class="grid grid-cols-3 gap-4 text-center">
         <div>
-          <div class="font-bold text-lg">{{ totalCollections }}</div>
-          <div class="text-xs text-gray-600 uppercase">Коллекций</div>
+          <div class="font-semibold text-lg text-zinc-900">{{ totalCollections }}</div>
+          <div class="text-xs text-zinc-600">Collections</div>
         </div>
         <div>
-          <div class="font-bold text-lg">{{ totalLinks }}</div>
-          <div class="text-xs text-gray-600 uppercase">Ссылок</div>
+          <div class="font-semibold text-lg text-zinc-900">{{ totalLinks }}</div>
+          <div class="text-xs text-zinc-600">Links</div>
         </div>
         <div>
-          <div class="font-bold text-lg">{{ favoriteCollections }}</div>
-          <div class="text-xs text-gray-600 uppercase">Избранных</div>
+          <div class="font-semibold text-lg text-zinc-900">{{ favoriteCollections }}</div>
+          <div class="text-xs text-zinc-600">Favorites</div>
         </div>
       </div>
     </div>
@@ -114,14 +76,16 @@
     <div class="flex-1 overflow-y-auto">
       <!-- Загрузка -->
       <div v-if="loading" class="p-8 text-center">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-        <p class="mt-2 text-sm text-gray-600">Загрузка коллекций...</p>
+        <div
+          class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900"
+        ></div>
+        <p class="mt-2 text-sm text-zinc-600">Загрузка коллекций...</p>
       </div>
 
       <!-- Пустое состояние -->
       <div v-else-if="!loading && filteredCollections.length === 0" class="p-8 text-center">
         <div
-          class="w-16 h-16 mx-auto mb-4 border-2 border-black bg-gray-100 flex items-center justify-center"
+          class="w-16 h-16 mx-auto mb-4 border border-zinc-200 bg-zinc-50 rounded-lg flex items-center justify-center"
         >
           <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -146,13 +110,9 @@
           }}
         </p>
 
-        <button
-          v-if="!searchQuery"
-          @click="$emit('create-collection')"
-          class="px-4 py-2 border-2 border-black bg-white text-sm font-bold uppercase hover:bg-black hover:text-white transition-colors duration-150"
-        >
+        <UiButton v-if="!searchQuery" @click="$emit('create-collection')" variant="default">
           Создать коллекцию
-        </button>
+        </UiButton>
       </div>
 
       <!-- Список коллекций -->
@@ -179,24 +139,16 @@
     </div>
 
     <!-- Футер с дополнительными действиями -->
-    <div class="p-4 border-t-2 border-black bg-gray-50">
-      <div class="flex items-center justify-between text-xs text-gray-600">
-        <span>Обновлено: {{ lastUpdated }}</span>
+    <div class="p-4 border-t border-zinc-200 bg-zinc-50">
+      <div class="flex items-center justify-between text-xs text-zinc-600">
+        <span>Updated: {{ lastUpdated }}</span>
 
         <div class="flex items-center space-x-2">
-          <button
-            @click="refreshCollections"
-            class="px-2 py-1 border border-black text-xs uppercase hover:bg-black hover:text-white transition-colors duration-150"
-          >
-            Обновить
-          </button>
+          <UiButton variant="outline" size="sm" @click="refreshCollections"> Refresh </UiButton>
 
-          <button
-            @click="$emit('import-collections')"
-            class="px-2 py-1 border border-black text-xs uppercase hover:bg-black hover:text-white transition-colors duration-150"
-          >
-            Импорт
-          </button>
+          <UiButton variant="outline" size="sm" @click="$emit('import-collections')">
+            Import
+          </UiButton>
         </div>
       </div>
     </div>
@@ -208,6 +160,9 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../stores/collections'
 import CollectionTreeNode from './navigation/CollectionTreeNode.vue'
+import UiButton from '../ui/UiButton.vue'
+import UiInput from '../ui/UiInput.vue'
+import { Plus, ChevronDown, Settings, Search } from 'lucide-vue-next'
 import type { Collection, CollectionTree } from '../../types/database'
 
 interface Props {
@@ -326,11 +281,12 @@ const toggleAllExpanded = () => {
 
   updateExpanded(collectionsTree.value)
   // Обновляем статус развернутых коллекций в store
-  collectionsStore.updateCollectionsExpanded(collectionsTree.value)
+  // TODO: Implement updateCollectionsExpanded in store if needed
 }
 
 const refreshCollections = async () => {
-  await collectionsStore.fetchCollections()
+  // TODO: Implement fetchCollections in store
+  console.log('Refresh collections')
 }
 
 // Обработчики событий

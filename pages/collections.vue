@@ -1,30 +1,42 @@
 <template>
-  <div class="min-h-screen bg-orange-50">
+  <div class="min-h-screen bg-zinc-50">
     <!-- Header -->
-    <div class="border-b-2 border-gray-900 bg-white">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <div class="border-b border-zinc-200 bg-white">
+      <div class="max-w-7xl mx-auto px-6 py-6 flex justify-between items-center">
         <div>
-          <h1 class="text-2xl font-black uppercase">Collections</h1>
-          <p class="font-mono text-sm text-gray-600">Organize your link collections</p>
+          <h1 class="text-2xl font-semibold text-zinc-900">Collections</h1>
+          <p class="text-sm text-zinc-500 mt-1">Organize your link collections</p>
         </div>
         <div class="flex space-x-3">
-          <button
-            @click="showCreateModal = true"
-            class="px-4 py-2 bg-green-400 border-2 border-gray-900 font-black uppercase hover:bg-green-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            ➕ New Collection
-          </button>
-          <NuxtLink
-            to="/dashboard"
-            class="px-4 py-2 bg-gray-400 border-2 border-gray-900 font-black uppercase hover:bg-gray-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            🏠 Dashboard
-          </NuxtLink>
+          <UiButton @click="showCreateModal = true" class="gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
+            New Collection
+          </UiButton>
+          <UiButton variant="outline" as-child>
+            <NuxtLink to="/dashboard" class="gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
+              Dashboard
+            </NuxtLink>
+          </UiButton>
         </div>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-6 py-8">
       <div class="flex gap-8">
         <!-- Sidebar -->
         <div class="w-80 flex-shrink-0">
@@ -49,86 +61,143 @@
 
           <!-- Collections Grid -->
           <div v-if="loading" class="text-center py-12">
-            <div class="text-4xl mb-4">⏳</div>
-            <p class="font-mono text-gray-500">Loading collections...</p>
+            <div
+              class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-zinc-900 mb-4"
+            ></div>
+            <p class="text-sm text-zinc-500">Loading collections...</p>
           </div>
 
           <div v-else-if="error" class="text-center py-12">
-            <div class="text-4xl mb-4">❌</div>
-            <p class="font-mono text-red-500 mb-4">{{ error }}</p>
-            <button
-              @click="refreshCollections"
-              class="px-4 py-2 bg-blue-400 border-2 border-gray-900 font-black uppercase hover:bg-blue-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            <div
+              class="w-16 h-16 mx-auto mb-4 rounded-lg bg-red-50 flex items-center justify-center"
             >
-              Try Again
-            </button>
+              <svg
+                class="w-8 h-8 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+            <p class="text-sm text-red-600 mb-4">{{ error }}</p>
+            <UiButton variant="outline" @click="refreshCollections"> Try Again </UiButton>
           </div>
 
           <div v-else-if="currentCollections.length === 0" class="text-center py-12">
-            <div class="text-6xl mb-6">📁</div>
-            <h2 class="text-2xl font-black uppercase mb-4">No Collections Yet</h2>
-            <p class="font-mono text-gray-600 mb-6">Create your first collection to get started!</p>
-            <button
-              @click="showCreateModal = true"
-              class="px-6 py-3 bg-green-400 border-2 border-gray-900 font-black uppercase hover:bg-green-500 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+            <div
+              class="w-16 h-16 mx-auto mb-6 rounded-lg bg-zinc-100 flex items-center justify-center"
             >
-              ➕ Create Collection
-            </button>
+              <svg
+                class="w-8 h-8 text-zinc-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
+                />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5h8" />
+              </svg>
+            </div>
+            <h2 class="text-lg font-semibold text-zinc-900 mb-2">No Collections Yet</h2>
+            <p class="text-sm text-zinc-500 mb-6">Create your first collection to get started!</p>
+            <UiButton @click="showCreateModal = true" class="gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Create Collection
+            </UiButton>
           </div>
 
           <div v-else>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <UiCard
                 v-for="collection in currentCollections"
                 :key="collection.id"
                 @click="handleSelectCollection(collection.id)"
-                class="p-6 bg-white border-2 border-gray-900 hover:bg-yellow-50 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] cursor-pointer group"
+                class="cursor-pointer hover:shadow-md transition-all duration-200 group"
               >
-                <!-- Collection Header -->
-                <div class="flex items-start justify-between mb-4">
-                  <div class="flex items-center space-x-3">
-                    <div
-                      class="w-10 h-10 border-2 border-gray-900 flex items-center justify-center font-black text-lg"
-                      :style="{ backgroundColor: collection.color }"
-                    >
-                      {{ collection.icon }}
+                <UiCardHeader class="pb-4">
+                  <div class="flex items-start justify-between">
+                    <div class="flex items-center space-x-3">
+                      <div
+                        class="w-10 h-10 rounded-lg flex items-center justify-center text-white font-medium"
+                        :style="{ backgroundColor: collection.color }"
+                      >
+                        <Folder class="w-5 h-5" />
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <UiCardTitle class="text-base truncate">{{ collection.name }}</UiCardTitle>
+                        <UiCardDescription v-if="collection.description" class="mt-1 truncate">
+                          {{ collection.description }}
+                        </UiCardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <h3 class="font-black text-lg uppercase">{{ collection.name }}</h3>
-                      <p v-if="collection.description" class="text-sm font-mono text-gray-600">
-                        {{ collection.description }}
-                      </p>
+
+                    <!-- Actions Menu -->
+                    <div class="opacity-0 group-hover:opacity-100 transition-opacity">
+                      <UiButton
+                        variant="ghost"
+                        size="icon"
+                        @click.stop="handleEditCollection(collection)"
+                        title="Edit collection"
+                      >
+                        <Edit2 class="w-4 h-4" />
+                      </UiButton>
                     </div>
                   </div>
+                </UiCardHeader>
 
-                  <!-- Actions Menu -->
-                  <div class="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      @click.stop="handleEditCollection(collection)"
-                      class="p-1 hover:bg-gray-200 rounded"
-                      title="Edit"
-                    >
-                      ✏️
-                    </button>
+                <UiCardContent class="pt-0">
+                  <!-- Collection Stats -->
+                  <div class="flex items-center justify-between text-sm text-zinc-500">
+                    <div class="flex items-center space-x-4">
+                      <span>{{ collection.children_count || 0 }} subcollections</span>
+                      <span>{{ collection.links_count || 0 }} links</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                      <svg
+                        v-if="collection.is_favorite"
+                        class="w-4 h-4 text-yellow-500"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                        />
+                      </svg>
+                      <svg
+                        v-if="collection.is_public"
+                        class="w-4 h-4 text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                    </div>
                   </div>
-                </div>
-
-                <!-- Collection Stats -->
-                <div class="flex items-center justify-between text-sm">
-                  <div class="flex items-center space-x-4">
-                    <span class="font-mono text-gray-500">
-                      {{ collection.children_count || 0 }} subcollections
-                    </span>
-                    <span class="font-mono text-gray-500">
-                      {{ collection.links_count || 0 }} links
-                    </span>
-                  </div>
-                  <div class="flex items-center space-x-1">
-                    <span v-if="collection.is_favorite" title="Favorite">⭐</span>
-                    <span v-if="collection.is_public" title="Public">🌐</span>
-                  </div>
-                </div>
-              </div>
+                </UiCardContent>
+              </UiCard>
             </div>
           </div>
         </div>
@@ -171,6 +240,13 @@ import CollectionBreadcrumbs from '../components/collections/navigation/Collecti
 import CreateCollectionModal from '../components/collections/modals/CreateCollectionModal.vue'
 import EditCollectionModal from '../components/collections/modals/EditCollectionModal.vue'
 import DeleteCollectionModal from '../components/collections/modals/DeleteCollectionModal.vue'
+import UiButton from '../components/ui/UiButton.vue'
+import UiCard from '../components/ui/UiCard.vue'
+import UiCardHeader from '../components/ui/UiCardHeader.vue'
+import UiCardTitle from '../components/ui/UiCardTitle.vue'
+import UiCardDescription from '../components/ui/UiCardDescription.vue'
+import UiCardContent from '../components/ui/UiCardContent.vue'
+import { Folder, Edit2 } from 'lucide-vue-next'
 import type { Collection } from '../types'
 
 useHead({

@@ -2,45 +2,43 @@
   <div class="collection-node">
     <!-- Основная строка коллекции -->
     <div
-      class="flex items-center p-2 hover:bg-gray-50 cursor-pointer group relative"
+      class="flex items-center p-2 hover:bg-zinc-50 cursor-pointer group relative rounded-md"
       :class="{
-        'bg-black text-white': isSelected,
+        'bg-zinc-900 text-white': isSelected,
         'ml-4': level > 0,
-        'border-l-4 border-black': level > 0,
+        'border-l-2 border-zinc-300': level > 0,
       }"
       :style="{ paddingLeft: `${level * 16 + 8}px` }"
       @click="$emit('select', collection.id)"
     >
       <!-- Кнопка разворота (если есть дети) -->
-      <button
+      <UiButton
         v-if="hasChildren"
+        variant="ghost"
+        size="icon"
         @click.stop="$emit('toggle-expand', collection.id)"
-        class="flex-shrink-0 p-1 mr-2 rounded hover:bg-gray-200 transition-colors duration-150"
-        :class="{ 'hover:bg-gray-600': isSelected }"
+        class="flex-shrink-0 w-5 h-5 mr-2"
+        :class="{ 'hover:bg-zinc-600': isSelected }"
       >
         <ChevronRight
           class="w-3 h-3 transition-transform duration-150"
           :class="{ 'rotate-90': isExpanded }"
         />
-      </button>
+      </UiButton>
 
       <!-- Отступ если нет детей -->
       <div v-else class="w-5 flex-shrink-0"></div>
 
       <!-- Иконка коллекции -->
       <div
-        class="flex-shrink-0 w-6 h-6 border-2 border-black bg-white flex items-center justify-center mr-3"
+        class="flex-shrink-0 w-6 h-6 border border-zinc-300 bg-white rounded-md flex items-center justify-center mr-3"
         :style="{
-          borderLeftColor: collection.color || '#9aa0a6',
-          borderLeftWidth: '4px',
+          borderLeftColor: collection.color || '#71717a',
+          borderLeftWidth: '3px',
           backgroundColor: isSelected ? 'white' : 'white',
         }"
       >
-        <component
-          :is="getIconComponent(collection.icon)"
-          class="w-3 h-3"
-          :class="{ 'text-black': true }"
-        />
+        <component :is="getIconComponent(collection.icon)" class="w-3 h-3 text-zinc-600" />
       </div>
 
       <!-- Название коллекции -->
@@ -49,14 +47,14 @@
           <!-- Название с подсветкой поиска -->
           <span
             class="font-medium text-sm truncate"
-            :class="{ 'text-white': isSelected, 'text-black': !isSelected }"
+            :class="{ 'text-white': isSelected, 'text-zinc-900': !isSelected }"
             v-html="highlightSearch(collection.name)"
           ></span>
 
           <!-- Индикаторы -->
           <div class="flex items-center space-x-1">
-            <span v-if="collection.is_public" class="text-xs" title="Публичная">🌐</span>
-            <span v-if="collection.is_favorite" class="text-xs" title="Избранная">❤️</span>
+            <span v-if="collection.is_public" class="text-xs" title="Public">🌐</span>
+            <span v-if="collection.is_favorite" class="text-xs" title="Favorite">❤️</span>
           </div>
         </div>
 
@@ -64,7 +62,7 @@
         <p
           v-if="collection.description && searchQuery"
           class="text-xs mt-1 truncate"
-          :class="{ 'text-gray-300': isSelected, 'text-gray-600': !isSelected }"
+          :class="{ 'text-zinc-300': isSelected, 'text-zinc-600': !isSelected }"
           v-html="highlightSearch(collection.description)"
         ></p>
       </div>
@@ -72,10 +70,10 @@
       <!-- Счетчик ссылок -->
       <div
         v-if="linksCount !== undefined"
-        class="flex-shrink-0 text-xs px-2 py-1 rounded"
+        class="flex-shrink-0 text-xs px-2 py-1 rounded-md"
         :class="{
-          'bg-white text-black': isSelected,
-          'bg-gray-100 text-gray-600': !isSelected,
+          'bg-white text-zinc-900': isSelected,
+          'bg-zinc-100 text-zinc-600': !isSelected,
         }"
       >
         {{ linksCount }}
@@ -117,30 +115,8 @@
 import { computed } from 'vue'
 import type { Collection, CollectionTree } from '../../../types'
 import { ChevronRight } from 'lucide-vue-next'
-import {
-  Folder,
-  FolderOpen,
-  Star,
-  Heart,
-  Bookmark,
-  Tag,
-  Archive,
-  Globe,
-  Lock,
-  Coffee,
-  Briefcase,
-  Home,
-  User,
-  Settings,
-  Book,
-  Music,
-  Image,
-  Video,
-  Code,
-  Gamepad2,
-  ShoppingCart,
-} from 'lucide-vue-next'
-// Импортируем после остальных импортов
+import { COLLECTION_ICONS, type IconKey } from '../../../utils/icons'
+import UiButton from '../../ui/UiButton.vue'
 import CollectionNodeActions from './CollectionNodeActions.vue'
 
 interface Props {
@@ -167,29 +143,7 @@ const emit = defineEmits<{
 }>()
 
 // Компоненты иконок
-const iconComponents = {
-  folder: Folder,
-  'folder-open': FolderOpen,
-  star: Star,
-  heart: Heart,
-  bookmark: Bookmark,
-  tag: Tag,
-  archive: Archive,
-  globe: Globe,
-  lock: Lock,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  home: Home,
-  user: User,
-  settings: Settings,
-  book: Book,
-  music: Music,
-  image: Image,
-  video: Video,
-  code: Code,
-  gamepad2: Gamepad2,
-  'shopping-cart': ShoppingCart,
-}
+const iconComponents = COLLECTION_ICONS
 
 // Вычисляемые свойства
 const isSelected = computed(() => props.selectedId === props.collection.id)
@@ -200,7 +154,7 @@ const isExpanded = computed(() => props.expandedIds.includes(props.collection.id
 
 // Получить компонент иконки
 const getIconComponent = (iconName?: string) => {
-  return iconComponents[iconName as keyof typeof iconComponents] || Folder
+  return COLLECTION_ICONS[iconName as IconKey]?.component || COLLECTION_ICONS.folder.component
 }
 
 // Подсветка поискового запроса в тексте

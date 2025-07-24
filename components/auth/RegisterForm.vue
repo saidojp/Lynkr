@@ -64,13 +64,9 @@
         </div>
 
         <!-- Submit Button -->
-        <button
-          type="submit"
-          :disabled="loading"
-          class="w-full py-2 px-4 bg-green-400 border-2 border-gray-900 font-black hover:bg-green-500 focus:outline-none focus:ring-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50"
-        >
-          {{ loading ? 'REGISTERING...' : 'REGISTER' }}
-        </button>
+        <UiButton type="submit" :disabled="loading" class="w-full">
+          {{ loading ? 'Registering...' : 'Register' }}
+        </UiButton>
       </form>
     </div>
   </div>

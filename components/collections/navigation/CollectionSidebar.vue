@@ -1,138 +1,130 @@
 <template>
-  <aside class="w-80 border-r-2 border-black bg-white flex flex-col h-full">
+  <aside class="w-80 bg-white border border-zinc-200 rounded-lg flex flex-col h-fit">
     <!-- Заголовок сайдбара -->
-    <div class="p-4 border-b-2 border-black bg-gray-50">
+    <div class="p-6 border-b border-zinc-200">
       <div class="flex items-center justify-between">
-        <h2 class="text-lg font-bold uppercase">Коллекции</h2>
+        <h2 class="text-lg font-semibold text-zinc-900">Collections</h2>
         <div class="flex items-center space-x-2">
           <!-- Кнопка создания коллекции -->
-          <button
+          <UiButton
+            variant="ghost"
+            size="icon"
             @click="$emit('create-collection')"
-            class="p-2 border-2 border-black bg-black text-white hover:bg-gray-800 transition-colors duration-150"
-            title="Создать коллекцию"
+            title="Create collection"
           >
             <Plus class="w-4 h-4" />
-          </button>
+          </UiButton>
 
           <!-- Кнопка развернуть/свернуть все -->
-          <button
+          <UiButton
+            variant="ghost"
+            size="icon"
             @click="toggleAllCollections"
-            class="p-2 border-2 border-black bg-white hover:bg-gray-100 transition-colors duration-150"
-            :title="allExpanded ? 'Свернуть все' : 'Развернуть все'"
+            :title="allExpanded ? 'Collapse all' : 'Expand all'"
           >
             <component :is="allExpanded ? 'ChevronsDown' : 'ChevronsUp'" class="w-4 h-4" />
-          </button>
+          </UiButton>
         </div>
       </div>
 
       <!-- Поиск коллекций -->
-      <div class="mt-3 relative">
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Поиск коллекций..."
-          class="w-full pl-10 pr-4 py-2 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm"
-        />
-        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+      <div class="mt-4 relative">
+        <UiInput v-model="searchQuery" placeholder="Search collections..." class="pl-10" />
+        <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
 
         <!-- Очистить поиск -->
-        <button
+        <UiButton
           v-if="searchQuery"
+          variant="ghost"
+          size="icon"
           @click="searchQuery = ''"
-          class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+          class="absolute right-1 top-1/2 transform -translate-y-1/2 h-8 w-8"
         >
           <X class="w-4 h-4" />
-        </button>
+        </UiButton>
       </div>
 
       <!-- Фильтры -->
-      <div class="mt-3 flex flex-wrap gap-2">
-        <button
+      <div class="mt-4 flex flex-wrap gap-2">
+        <UiButton
           v-for="filter in filters"
           :key="filter.key"
+          variant="outline"
+          size="sm"
           @click="toggleFilter(filter.key)"
-          class="px-2 py-1 border-2 border-black bg-white text-xs font-medium uppercase transition-colors duration-150"
           :class="{
-            'bg-black text-white': activeFilters.includes(filter.key),
-            'hover:bg-gray-100': !activeFilters.includes(filter.key),
+            'bg-zinc-900 text-white border-zinc-900': activeFilters.includes(filter.key),
           }"
         >
           {{ filter.label }}
-        </button>
+        </UiButton>
       </div>
     </div>
 
     <!-- Дерево коллекций -->
-    <div class="flex-1 overflow-y-auto">
-      <div v-if="loading" class="p-4 text-center">
+    <div class="flex-1 overflow-y-auto p-4">
+      <div v-if="loading" class="text-center py-8">
         <div class="inline-flex items-center space-x-2">
           <div
-            class="animate-spin w-4 h-4 border-2 border-black border-t-transparent rounded-full"
+            class="animate-spin w-4 h-4 border-2 border-zinc-300 border-t-zinc-900 rounded-full"
           ></div>
-          <span class="text-sm">Загрузка...</span>
+          <span class="text-sm text-zinc-500">Loading...</span>
         </div>
       </div>
 
-      <div v-else-if="error" class="p-4">
-        <div class="border-2 border-red-500 bg-red-50 p-3 text-center">
-          <AlertCircle class="w-5 h-5 text-red-500 mx-auto mb-2" />
-          <p class="text-sm text-red-700">{{ error }}</p>
-          <button
-            @click="$emit('retry')"
-            class="mt-2 px-3 py-1 border-2 border-red-500 bg-white text-xs font-medium uppercase hover:bg-red-50"
-          >
-            Повторить
-          </button>
-        </div>
+      <div v-else-if="error" class="p-4 border border-red-200 bg-red-50 rounded-lg">
+        <AlertCircle class="w-5 h-5 text-red-500 mx-auto mb-2" />
+        <p class="text-sm text-red-700">{{ error }}</p>
+        <UiButton variant="outline" size="sm" @click="$emit('retry')" class="mt-2">
+          Retry
+        </UiButton>
       </div>
 
       <div v-else-if="filteredCollections.length === 0" class="p-4 text-center">
-        <div class="text-gray-500">
+        <div class="text-zinc-500">
           <Folder class="w-8 h-8 mx-auto mb-2" />
           <p class="text-sm">
-            {{ searchQuery ? 'Коллекции не найдены' : 'Нет коллекций' }}
+            {{ searchQuery ? 'No collections found' : 'No collections' }}
           </p>
-          <button
-            v-if="!searchQuery"
-            @click="$emit('create-collection')"
-            class="mt-2 px-3 py-1 border-2 border-black bg-black text-white text-xs font-medium uppercase hover:bg-gray-800"
-          >
-            Создать первую коллекцию
-          </button>
+          <UiButton v-if="!searchQuery" @click="$emit('create-collection')" size="sm" class="mt-2">
+            Create first collection
+          </UiButton>
         </div>
       </div>
 
       <!-- Рекурсивный компонент дерева -->
-      <CollectionTreeNode
-        v-for="collection in filteredCollections"
-        :key="collection.id"
-        :collection="collection"
-        :level="0"
-        :selected-id="selectedCollectionId"
-        :expanded-ids="expandedIds"
-        :search-query="searchQuery"
-        @select="$emit('select-collection', $event)"
-        @toggle-expand="toggleExpand"
-        @edit="$emit('edit-collection', $event)"
-        @delete="$emit('delete-collection', $event)"
-        @create-subcollection="$emit('create-subcollection', $event)"
-      />
+      <div v-else class="space-y-1">
+        <CollectionTreeNode
+          v-for="collection in filteredCollections"
+          :key="collection.id"
+          :collection="collection"
+          :level="0"
+          :selected-id="selectedCollectionId"
+          :expanded-ids="expandedIds"
+          :search-query="searchQuery"
+          @select="$emit('select-collection', $event)"
+          @toggle-expand="toggleExpand"
+          @edit="$emit('edit-collection', $event)"
+          @delete="$emit('delete-collection', $event)"
+          @create-subcollection="$emit('create-subcollection', $event)"
+        />
+      </div>
     </div>
 
     <!-- Статистика внизу -->
-    <div class="p-4 border-t-2 border-black bg-gray-50">
+    <div class="p-6 border-t border-zinc-200 bg-zinc-50/50">
       <div class="grid grid-cols-3 gap-3 text-center">
         <div>
-          <div class="text-sm font-bold">{{ collectionsCount }}</div>
-          <div class="text-xs text-gray-600">Коллекций</div>
+          <div class="text-lg font-semibold text-zinc-900">{{ collectionsCount }}</div>
+          <div class="text-xs text-zinc-500">Collections</div>
         </div>
         <div>
-          <div class="text-sm font-bold">{{ favoriteCollectionsCount }}</div>
-          <div class="text-xs text-gray-600">Избранных</div>
+          <div class="text-lg font-semibold text-zinc-900">{{ favoriteCollectionsCount }}</div>
+          <div class="text-xs text-zinc-500">Favorites</div>
         </div>
         <div>
-          <div class="text-sm font-bold">{{ publicCollectionsCount }}</div>
-          <div class="text-xs text-gray-600">Публичных</div>
+          <div class="text-lg font-semibold text-zinc-900">{{ publicCollectionsCount }}</div>
+          <div class="text-xs text-zinc-500">Public</div>
         </div>
       </div>
     </div>
@@ -144,6 +136,8 @@ import { ref, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../../stores/collections'
 import CollectionTreeNode from './CollectionTreeNode.vue'
+import UiButton from '../../ui/UiButton.vue'
+import UiInput from '../../ui/UiInput.vue'
 import type { Collection, CollectionTree } from '../../../types'
 import { Plus, Search, X, ChevronsUp, ChevronsDown, Folder, AlertCircle } from 'lucide-vue-next'
 
@@ -172,8 +166,8 @@ const activeFilters = ref<string[]>([])
 
 // Фильтры для коллекций
 const filters = [
-  { key: 'favorite', label: 'Избранные' },
-  { key: 'public', label: 'Публичные' },
+  { key: 'favorite', label: 'Favorites' },
+  { key: 'public', label: 'Public' },
   { key: 'private', label: 'Приватные' },
   { key: 'empty', label: 'Пустые' },
 ]
@@ -207,7 +201,7 @@ const filteredCollections = computed((): CollectionTree[] => {
 })
 
 // Статистика
-const collectionsCount = computed(() => collectionsStore.collectionsCount)
+const collectionsCount = computed(() => collectionsStore.collections.length)
 const favoriteCollectionsCount = computed(
   () => collectionsStore.collections.filter(c => c.is_favorite).length
 )
@@ -317,15 +311,30 @@ const toggleFilter = (filterKey: string) => {
 
 // Переключить разворот коллекции
 const toggleExpand = (collectionId: string) => {
-  collectionsStore.toggleCollectionExpanded(collectionId)
+  collectionsStore.toggleCollectionExpansion(collectionId)
 }
 
 // Развернуть/свернуть все коллекции
 const toggleAllCollections = () => {
+  // Простая реализация без специальных методов store
   if (allExpanded.value) {
-    collectionsStore.collapseAllCollections()
+    // Свернуть все
+    collectionsTree.value.forEach(collection => {
+      getAllCollectionIds([collection]).forEach(id => {
+        if (expandedCollections.value.has(id)) {
+          collectionsStore.toggleCollectionExpansion(id)
+        }
+      })
+    })
   } else {
-    collectionsStore.expandAllCollections()
+    // Развернуть все
+    collectionsTree.value.forEach(collection => {
+      getAllCollectionIds([collection]).forEach(id => {
+        if (!expandedCollections.value.has(id)) {
+          collectionsStore.toggleCollectionExpansion(id)
+        }
+      })
+    })
   }
 }
 </script>

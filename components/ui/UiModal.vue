@@ -8,7 +8,10 @@
       <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="handleBackdropClick"></div>
 
       <!-- Modal -->
-      <div class="relative w-auto max-w-lg mx-auto my-6 animate-in fade-in-0 zoom-in-95" :class="modalSizeClasses">
+      <div
+        class="relative w-auto max-w-lg mx-auto my-6 animate-in fade-in-0 zoom-in-95"
+        :class="modalSizeClasses"
+      >
         <div
           class="relative flex flex-col w-full bg-white border border-zinc-200 rounded-lg shadow-lg outline-none focus:outline-none"
         >
@@ -24,7 +27,12 @@
               type="button"
             >
               <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
               <span class="sr-only">Close</span>
             </button>
@@ -63,7 +71,7 @@ const emit = defineEmits<{
 const modalSizeClasses = computed(() => {
   const sizes = {
     sm: 'max-w-sm',
-    md: 'max-w-md', 
+    md: 'max-w-md',
     lg: 'max-w-lg',
     xl: 'max-w-xl',
     '2xl': 'max-w-2xl',
@@ -96,6 +104,5 @@ onUnmounted(() => {
   document.removeEventListener('keydown', handleEscape)
 })
 </script>
-  transform: scale(0.95) translateY(-20px);
-}
-</style>
+transform: scale(0.95) translateY(-20px);
+<style scoped></style>

@@ -2,38 +2,32 @@
   <div class="space-y-4">
     <!-- Предварительный просмотр выбранной иконки -->
     <div class="flex items-center space-x-3">
-      <div class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center">
-        <component :is="getIconComponent(currentIcon)" class="w-5 h-5" />
+      <div class="w-10 h-10 bg-zinc-100 rounded-lg flex items-center justify-center">
+        <component :is="getIconComponent(currentIcon)" class="w-5 h-5 text-zinc-600" />
       </div>
-      <span class="text-sm font-medium uppercase">{{ getIconName(currentIcon) }}</span>
+      <span class="text-sm font-medium text-zinc-900">{{ getIconName(currentIcon) }}</span>
     </div>
 
     <!-- Поиск иконок -->
     <div class="relative">
-      <input
-        v-model="searchQuery"
-        type="text"
-        placeholder="Поиск иконки..."
-        class="w-full p-3 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-black text-sm pr-10"
-      />
-      <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-        <Search class="w-4 h-4 text-gray-500" />
-      </div>
+      <UiInput v-model="searchQuery" placeholder="Search icons..." class="pl-10" />
+      <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-400" />
     </div>
 
     <!-- Сетка иконок -->
     <div
-      class="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto border-2 border-black bg-gray-50 p-3"
+      class="grid grid-cols-6 gap-2 max-h-48 overflow-y-auto bg-zinc-50 border border-zinc-200 rounded-lg p-3"
     >
-      <button
+      <UiButton
         v-for="iconKey in filteredIcons"
         :key="iconKey"
-        type="button"
+        variant="ghost"
+        size="icon"
         @click="selectIcon(iconKey)"
-        class="w-10 h-10 border-2 border-black bg-white flex items-center justify-center transition-all duration-150 hover:scale-105 hover:shadow-md group relative"
+        class="relative group"
         :class="{
-          'bg-black text-white': currentIcon === iconKey,
-          'hover:bg-gray-100': currentIcon !== iconKey,
+          'bg-zinc-900 text-white hover:bg-zinc-800': currentIcon === iconKey,
+          'hover:bg-zinc-100': currentIcon !== iconKey,
         }"
         :title="getIconName(iconKey)"
       >
@@ -41,29 +35,29 @@
 
         <!-- Tooltip -->
         <div
-          class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-10 pointer-events-none"
+          class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-zinc-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-150 whitespace-nowrap z-10 pointer-events-none"
         >
           {{ getIconName(iconKey) }}
         </div>
-      </button>
+      </UiButton>
     </div>
 
     <!-- Категории иконок -->
     <div class="space-y-2">
-      <label class="block text-xs font-medium uppercase">Категории</label>
+      <UiLabel class="text-xs text-zinc-500 uppercase tracking-wide">Categories</UiLabel>
       <div class="flex flex-wrap gap-2">
-        <button
+        <UiButton
           v-for="category in iconCategories"
           :key="category.key"
-          type="button"
+          variant="outline"
+          size="sm"
           @click="filterByCategory(category.key)"
-          class="px-3 py-1 border-2 border-black bg-white text-xs font-medium uppercase transition-colors duration-150 hover:bg-gray-100"
           :class="{
-            'bg-black text-white': selectedCategory === category.key,
+            'bg-zinc-900 text-white border-zinc-900': selectedCategory === category.key,
           }"
         >
           {{ category.label }}
-        </button>
+        </UiButton>
       </div>
     </div>
   </div>
@@ -71,31 +65,11 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { COLLECTION_ICONS, ICON_NAMES } from '../../utils/constants'
-import {
-  Folder,
-  FolderOpen,
-  Star,
-  Heart,
-  Bookmark,
-  Tag,
-  Archive,
-  Globe,
-  Lock,
-  Coffee,
-  Briefcase,
-  Home,
-  User,
-  Settings,
-  Book,
-  Music,
-  Image,
-  Video,
-  Code,
-  Gamepad2,
-  ShoppingCart,
-  Search,
-} from 'lucide-vue-next'
+import { COLLECTION_ICONS, type IconKey } from '../../utils/icons'
+import UiButton from '../ui/UiButton.vue'
+import UiInput from '../ui/UiInput.vue'
+import UiLabel from '../ui/UiLabel.vue'
+import { Search } from 'lucide-vue-next'
 
 interface Props {
   currentIcon?: string
@@ -106,71 +80,55 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  'update:modelValue': [value: string]
+  'update:icon': [icon: string]
 }>()
 
-// Поиск и фильтрация
 const searchQuery = ref('')
-const selectedCategory = ref('all')
-
-// Компоненты иконок
-const iconComponents = {
-  folder: Folder,
-  'folder-open': FolderOpen,
-  star: Star,
-  heart: Heart,
-  bookmark: Bookmark,
-  tag: Tag,
-  archive: Archive,
-  globe: Globe,
-  lock: Lock,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  home: Home,
-  user: User,
-  settings: Settings,
-  book: Book,
-  music: Music,
-  image: Image,
-  video: Video,
-  code: Code,
-  gamepad2: Gamepad2,
-  'shopping-cart': ShoppingCart,
-}
+const selectedCategory = ref<string | null>(null)
 
 // Категории иконок
 const iconCategories = [
-  { key: 'all', label: 'Все' },
-  { key: 'general', label: 'Общие' },
-  { key: 'content', label: 'Контент' },
-  { key: 'work', label: 'Работа' },
-  { key: 'personal', label: 'Личное' },
+  { key: null, label: 'All' },
+  { key: 'general', label: 'General' },
+  { key: 'work', label: 'Work' },
+  { key: 'media', label: 'Media' },
+  { key: 'lifestyle', label: 'Lifestyle' },
 ]
 
-// Категоризация иконок
-const iconsByCategory = {
-  general: ['folder', 'folder-open', 'star', 'bookmark', 'tag', 'archive', 'settings'],
-  content: ['book', 'music', 'image', 'video', 'code'],
-  work: ['briefcase', 'globe', 'lock'],
-  personal: ['heart', 'coffee', 'home', 'user', 'gamepad2', 'shopping-cart'],
-}
+// Все доступные иконки
+const availableIcons = computed(() => Object.keys(COLLECTION_ICONS) as IconKey[])
 
-// Фильтрованные иконки
+// Фильтрация иконок по поиску и категории
 const filteredIcons = computed(() => {
-  let icons = COLLECTION_ICONS
+  let icons = availableIcons.value
 
-  // Фильтрация по категории
-  if (selectedCategory.value !== 'all') {
-    icons = iconsByCategory[selectedCategory.value as keyof typeof iconsByCategory] || []
+  // Фильтр по поиску
+  if (searchQuery.value.trim()) {
+    icons = icons.filter(iconKey =>
+      COLLECTION_ICONS[iconKey].label.toLowerCase().includes(searchQuery.value.toLowerCase())
+    )
   }
 
-  // Фильтрация по поиску
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    icons = icons.filter(iconKey => {
-      const name = getIconName(iconKey).toLowerCase()
-      return name.includes(query) || iconKey.toLowerCase().includes(query)
-    })
+  // Фильтр по категории
+  if (selectedCategory.value) {
+    switch (selectedCategory.value) {
+      case 'general':
+        icons = icons.filter(key =>
+          ['folder', 'folder-open', 'star', 'heart', 'bookmark'].includes(key)
+        )
+        break
+      case 'work':
+        icons = icons.filter(key => ['briefcase', 'settings', 'code', 'calendar'].includes(key))
+        break
+      case 'media':
+        icons = icons.filter(key =>
+          ['music', 'image', 'video', 'camera', 'headphones'].includes(key)
+        )
+        break
+      case 'lifestyle':
+        icons = icons.filter(key => ['home', 'coffee', 'car', 'plane', 'gift'].includes(key))
+        break
+    }
   }
 
   return icons
@@ -178,49 +136,26 @@ const filteredIcons = computed(() => {
 
 // Получить компонент иконки
 const getIconComponent = (iconKey: string) => {
-  return iconComponents[iconKey as keyof typeof iconComponents] || Folder
+  return COLLECTION_ICONS[iconKey as IconKey]?.component || COLLECTION_ICONS.folder.component
 }
 
-// Получить название иконки
-const getIconName = (iconKey: string): string => {
-  return ICON_NAMES[iconKey as keyof typeof ICON_NAMES] || iconKey
+// Получить имя иконки
+const getIconName = (iconKey: string) => {
+  return COLLECTION_ICONS[iconKey as IconKey]?.label || 'Folder'
 }
 
 // Выбрать иконку
 const selectIcon = (iconKey: string) => {
-  emit('update:modelValue', iconKey)
+  emit('update:icon', iconKey)
 }
 
-// Фильтровать по категории
-const filterByCategory = (category: string) => {
-  selectedCategory.value = category
+// Фильтр по категории
+const filterByCategory = (categoryKey: string | null) => {
+  selectedCategory.value = categoryKey
+}
+
+// Сброс поиска при изменении категории
+watch(selectedCategory, () => {
   searchQuery.value = ''
-}
-
-// Отслеживание изменений текущей иконки
-watch(
-  () => props.currentIcon,
-  () => {
-    // Можно добавить дополнительную логику при изменении иконки
-  }
-)
+})
 </script>
-
-<style scoped>
-/* Кастомизация скроллбара для сетки иконок */
-.overflow-y-auto::-webkit-scrollbar {
-  width: 6px;
-}
-
-.overflow-y-auto::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb {
-  background: #000;
-}
-
-.overflow-y-auto::-webkit-scrollbar-thumb:hover {
-  background: #333;
-}
-</style>

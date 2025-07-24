@@ -1,30 +1,30 @@
 <template>
-  <div
-    class="collection-item relative bg-white border-4 border-black hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:transform hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 cursor-pointer group"
+  <UiCard
+    class="collection-item relative cursor-pointer group hover:shadow-lg transition-all duration-200"
     @click="$emit('select', collection)"
-    :class="{ 'ring-4 ring-gray-400': isSelected }"
+    :class="{ 'ring-2 ring-zinc-900 ring-offset-2': isSelected }"
   >
     <!-- Статус индикатор -->
     <div
-      class="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-b-[20px]"
-      :class="collection.is_public ? 'border-b-green-500' : 'border-b-red-500'"
+      class="absolute top-3 right-3 w-2 h-2 rounded-full"
+      :class="collection.is_public ? 'bg-green-500' : 'bg-red-500'"
     ></div>
 
     <!-- Цветовая полоска -->
     <div
-      class="absolute top-0 left-0 w-full h-2"
+      class="absolute top-0 left-0 w-full h-1 rounded-t-lg"
       :style="{ backgroundColor: collection.color || '#9aa0a6' }"
     ></div>
 
-    <div class="p-6 pt-8">
+    <div class="p-6 pt-7">
       <!-- Header с иконкой и названием -->
       <div class="flex items-start justify-between mb-4">
         <div class="flex items-center space-x-3 flex-1">
           <!-- Иконка коллекции -->
           <div
-            class="w-12 h-12 border-2 border-black bg-white flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors duration-200"
+            class="w-12 h-12 border border-zinc-200 bg-zinc-50 rounded-lg flex items-center justify-center group-hover:bg-zinc-100 transition-colors duration-200"
           >
-            <component :is="getIconComponent(collection.icon)" class="w-6 h-6" />
+            <component :is="getIconComponent(collection.icon)" class="w-6 h-6 text-zinc-700" />
           </div>
 
           <!-- Название и описание -->
@@ -43,88 +43,72 @@
 
         <!-- Меню действий -->
         <div class="relative">
-          <button
-            @click.stop="toggleMenu"
-            class="p-2 hover:bg-gray-100 border-2 border-black bg-white hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:transform hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all duration-150"
-          >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 5v.01M12 12v.01M12 19v.01"
-              ></path>
-            </svg>
-          </button>
+          <UiButton @click.stop="toggleMenu" variant="ghost" size="sm" class="h-8 w-8 p-0">
+            <MoreVertical class="w-4 h-4" />
+          </UiButton>
 
           <!-- Выпадающее меню -->
           <div
             v-if="showMenu"
-            class="absolute right-0 top-full mt-2 w-48 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] z-10"
+            class="absolute right-0 top-full mt-2 w-48 bg-white border border-zinc-200 rounded-lg shadow-lg z-10 py-1"
           >
             <button
               @click.stop="editCollection"
-              class="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-200 font-medium"
+              class="w-full px-4 py-2 text-left hover:bg-zinc-50 text-sm flex items-center space-x-2"
             >
-              ✏️ Редактировать
+              <Edit2 class="w-4 h-4" />
+              <span>Редактировать</span>
             </button>
             <button
               @click.stop="duplicateCollection"
-              class="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-200 font-medium"
+              class="w-full px-4 py-2 text-left hover:bg-zinc-50 text-sm flex items-center space-x-2"
             >
-              📋 Дублировать
+              <Copy class="w-4 h-4" />
+              <span>Дублировать</span>
             </button>
             <button
               @click.stop="toggleFavorite"
-              class="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-200 font-medium"
+              class="w-full px-4 py-2 text-left hover:bg-zinc-50 text-sm flex items-center space-x-2"
             >
-              {{ collection.is_favorite ? '💔 Убрать из избранного' : '❤️ В избранное' }}
+              <Heart
+                class="w-4 h-4"
+                :class="{ 'fill-red-500 text-red-500': collection.is_favorite }"
+              />
+              <span>{{ collection.is_favorite ? 'Убрать из избранного' : 'В избранное' }}</span>
             </button>
             <button
               @click.stop="toggleVisibility"
-              class="w-full px-4 py-2 text-left hover:bg-gray-100 border-b border-gray-200 font-medium"
+              class="w-full px-4 py-2 text-left hover:bg-zinc-50 text-sm flex items-center space-x-2"
             >
-              {{ collection.is_public ? '🔒 Сделать приватной' : '🌐 Сделать публичной' }}
+              <component :is="collection.is_public ? Lock : Globe" class="w-4 h-4" />
+              <span>{{ collection.is_public ? 'Сделать приватной' : 'Сделать публичной' }}</span>
             </button>
             <button
               @click.stop="deleteCollection"
-              class="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 font-medium"
+              class="w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 text-sm flex items-center space-x-2"
             >
-              🗑️ Удалить
+              <Trash2 class="w-4 h-4" />
+              <span>Удалить</span>
             </button>
           </div>
         </div>
       </div>
 
       <!-- Статистика -->
-      <div class="flex items-center justify-between text-sm font-medium">
+      <div class="flex items-center justify-between text-sm text-zinc-600">
         <div class="flex items-center space-x-4">
           <div class="flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.102m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-              ></path>
-            </svg>
+            <Link class="w-4 h-4" />
             <span>{{ collection.links_count || 0 }} ссылок</span>
           </div>
 
           <div v-if="collection.children_count" class="flex items-center space-x-1">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              ></path>
-            </svg>
+            <Folder class="w-4 h-4" />
             <span>{{ collection.children_count }} подколлекций</span>
           </div>
         </div>
 
-        <div class="text-gray-500 text-xs">
+        <div class="text-zinc-400 text-xs">
           {{ formatDate(collection.updated_at) }}
         </div>
       </div>
@@ -153,20 +137,31 @@
     <!-- Прогресс бар (если есть данные о заполненности) -->
     <div
       v-if="collection.completion_percentage !== undefined"
-      class="absolute bottom-0 left-0 w-full h-1 bg-gray-200"
+      class="absolute bottom-0 left-0 w-full h-1 bg-zinc-200 rounded-b-lg"
     >
       <div
-        class="h-full bg-black transition-all duration-300"
+        class="h-full bg-zinc-900 transition-all duration-300 rounded-b-lg"
         :style="{ width: `${collection.completion_percentage}%` }"
       ></div>
     </div>
-  </div>
+  </UiCard>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useCollectionsStore } from '../../stores/collections'
 import type { Collection } from '../../types/database'
+import {
+  MoreVertical,
+  Edit2,
+  Copy,
+  Heart,
+  Lock,
+  Globe,
+  Trash2,
+  Link,
+  Folder,
+} from 'lucide-vue-next'
 
 // Props
 interface Props {
@@ -215,7 +210,9 @@ const deleteCollection = () => {
 const duplicateCollection = async () => {
   showMenu.value = false
   try {
-    await collectionsStore.duplicateCollection(props.collection.id)
+    // TODO: Implement duplication in store
+    console.log('Duplicate collection:', props.collection.id)
+    emit('duplicate', props.collection)
   } catch (error) {
     console.error('Error duplicating collection:', error)
   }
@@ -224,7 +221,12 @@ const duplicateCollection = async () => {
 const toggleFavorite = async () => {
   showMenu.value = false
   try {
-    await collectionsStore.toggleFavorite(props.collection.id)
+    // TODO: Implement toggle favorite in store
+    console.log('Toggle favorite:', props.collection.id)
+    collectionsStore.updateCollection({
+      id: props.collection.id,
+      is_favorite: !props.collection.is_favorite,
+    })
   } catch (error) {
     console.error('Error toggling favorite:', error)
   }
@@ -233,7 +235,12 @@ const toggleFavorite = async () => {
 const toggleVisibility = async () => {
   showMenu.value = false
   try {
-    await collectionsStore.togglePublic(props.collection.id)
+    // TODO: Implement toggle public in store
+    console.log('Toggle visibility:', props.collection.id)
+    collectionsStore.updateCollection({
+      id: props.collection.id,
+      is_public: !props.collection.is_public,
+    })
   } catch (error) {
     console.error('Error toggling visibility:', error)
   }

@@ -10,12 +10,7 @@
             {{ user.user_metadata?.last_name || '' }}
           </p>
         </div>
-        <button
-          @click="handleLogout"
-          class="px-4 py-2 bg-red-400 border-2 border-gray-900 font-black uppercase hover:bg-red-500 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-        >
-          Logout
-        </button>
+        <UiButton @click="handleLogout" variant="destructive"> Logout </UiButton>
       </div>
     </div>
 
@@ -23,87 +18,84 @@
       <!-- Quick Actions -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <!-- Collections -->
-        <NuxtLink
-          to="/collections"
-          class="p-6 bg-white border-2 border-gray-900 hover:bg-yellow-50 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group"
-        >
-          <div class="flex items-center space-x-4">
-            <div
-              class="w-12 h-12 bg-blue-400 border-2 border-gray-900 flex items-center justify-center font-black text-xl"
-            >
-              📁
-            </div>
-            <div>
-              <h3 class="text-lg font-black uppercase">Collections</h3>
-              <p class="text-sm font-mono text-gray-600">Manage your collections</p>
-            </div>
-          </div>
+        <NuxtLink to="/collections">
+          <UiCard class="cursor-pointer hover:shadow-md transition-all duration-200 group">
+            <UiCardContent class="p-6">
+              <div class="flex items-center space-x-4">
+                <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
+                  <Folder class="w-6 h-6 text-zinc-700" />
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-zinc-900">Collections</h3>
+                  <p class="text-sm text-zinc-600">Manage your collections</p>
+                </div>
+              </div>
+            </UiCardContent>
+          </UiCard>
         </NuxtLink>
 
         <!-- Add Collection -->
-        <button
+        <UiCard
           @click="createCollection"
-          class="p-6 bg-white border-2 border-gray-900 hover:bg-green-50 transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] group"
+          class="cursor-pointer hover:shadow-md transition-all duration-200 group"
         >
-          <div class="flex items-center space-x-4">
-            <div
-              class="w-12 h-12 bg-green-400 border-2 border-gray-900 flex items-center justify-center font-black text-xl"
-            >
-              ➕
+          <UiCardContent class="p-6">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
+                <Plus class="w-6 h-6 text-zinc-700" />
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-zinc-900">New Collection</h3>
+                <p class="text-sm text-zinc-600">Create a new collection</p>
+              </div>
             </div>
-            <div>
-              <h3 class="text-lg font-black uppercase">New Collection</h3>
-              <p class="text-sm font-mono text-gray-600">Create a new collection</p>
-            </div>
-          </div>
-        </button>
+          </UiCardContent>
+        </UiCard>
 
         <!-- Stats -->
-        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div class="flex items-center space-x-4">
-            <div
-              class="w-12 h-12 bg-purple-400 border-2 border-gray-900 flex items-center justify-center font-black text-xl"
-            >
-              📊
+        <UiCard>
+          <UiCardContent class="p-6">
+            <div class="flex items-center space-x-4">
+              <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
+                <BarChart3 class="w-6 h-6 text-zinc-700" />
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-zinc-900">Statistics</h3>
+                <p class="text-sm text-zinc-600">{{ collectionsCount }} collections</p>
+              </div>
             </div>
-            <div>
-              <h3 class="text-lg font-black uppercase">Statistics</h3>
-              <p class="text-sm font-mono text-gray-600">{{ collectionsCount }} collections</p>
-            </div>
-          </div>
-        </div>
+          </UiCardContent>
+        </UiCard>
       </div>
 
       <!-- Recent Collections -->
       <div class="mb-12">
-        <h2 class="text-2xl font-black uppercase mb-6">Recent Collections</h2>
+        <h2 class="text-2xl font-semibold text-zinc-900 mb-6">Recent Collections</h2>
         <div
           v-if="recentCollections.length > 0"
           class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
-          <div
-            v-for="collection in recentCollections"
-            :key="collection.id"
-            class="p-4 bg-white border-2 border-gray-900 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-          >
-            <div class="flex items-center space-x-3">
-              <div
-                class="w-8 h-8 border-2 border-gray-900 flex items-center justify-center text-sm font-black"
-                :style="{ backgroundColor: collection.color }"
-              >
-                {{ collection.icon }}
+          <UiCard v-for="collection in recentCollections" :key="collection.id">
+            <UiCardContent class="p-4">
+              <div class="flex items-center space-x-3">
+                <div
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                  :style="{ backgroundColor: collection.color }"
+                >
+                  <Folder class="w-4 h-4 text-white" />
+                </div>
+                <div>
+                  <h3 class="font-semibold text-sm text-zinc-900">{{ collection.name }}</h3>
+                  <p v-if="collection.description" class="text-xs text-zinc-600 truncate">
+                    {{ collection.description }}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 class="font-black text-sm uppercase">{{ collection.name }}</h3>
-                <p v-if="collection.description" class="text-xs font-mono text-gray-600 truncate">
-                  {{ collection.description }}
-                </p>
-              </div>
-            </div>
-          </div>
+            </UiCardContent>
+          </UiCard>
         </div>
         <div v-else class="text-center py-12">
-          <p class="font-mono text-gray-500">No collections yet. Create your first one!</p>
+          <p class="text-zinc-500">No collections yet. Create your first one!</p>
         </div>
       </div>
     </div>
@@ -114,6 +106,7 @@
 import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../stores/collections'
+import { Folder, Plus, BarChart3 } from 'lucide-vue-next'
 
 definePageMeta({
   middleware: ['auth'],

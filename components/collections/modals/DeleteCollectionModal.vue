@@ -1,17 +1,17 @@
 <template>
-  <UiModal :show="show" @close="handleClose" :title="'Удалить коллекцию'" :size="'medium'">
+  <UiModal :show="show" @close="handleClose" :title="'Delete Collection'" :size="'md'">
     <div class="space-y-6">
       <!-- Предупреждение -->
-      <div class="border-2 border-red-500 bg-red-50 p-4">
+      <div class="border border-red-300 bg-red-50 p-4 rounded-lg">
         <div class="flex items-start space-x-3">
           <div class="flex-shrink-0">
             <AlertTriangle class="w-5 h-5 text-red-500" />
           </div>
           <div class="flex-1">
-            <h3 class="text-sm font-bold text-red-800 uppercase">Внимание!</h3>
+            <h3 class="text-sm font-semibold text-red-800">Warning!</h3>
             <p class="text-sm text-red-700 mt-1">
-              Это действие нельзя будет отменить. Коллекция и все её содержимое будут удалены
-              навсегда.
+              This action cannot be undone. The collection and all its contents will be permanently
+              deleted.
             </p>
           </div>
         </div>
@@ -19,64 +19,59 @@
 
       <!-- Информация о коллекции -->
       <div v-if="collection" class="space-y-3">
-        <div class="flex items-center space-x-3 p-3 bg-gray-50 border-2 border-gray-200">
+        <UiCard class="p-3">
           <!-- Иконка коллекции -->
-          <div
-            class="w-8 h-8 border-2 border-black bg-white flex items-center justify-center"
-            :style="{ borderLeftColor: collection.color, borderLeftWidth: '4px' }"
-          >
-            <component :is="getIconComponent(collection.icon)" class="w-4 h-4" />
-          </div>
-
-          <!-- Информация -->
-          <div class="flex-1">
-            <div class="flex items-center space-x-2">
-              <span class="font-bold text-sm uppercase">{{ collection.name }}</span>
-              <span v-if="collection.is_public" class="text-xs text-green-600">🌐</span>
-              <span v-if="collection.is_favorite" class="text-xs text-red-500">❤️</span>
+          <div class="flex items-center space-x-3">
+            <div
+              class="w-8 h-8 border border-zinc-300 bg-white rounded-md flex items-center justify-center"
+              :style="{ borderLeftColor: collection.color, borderLeftWidth: '3px' }"
+            >
+              <component :is="getIconComponent(collection.icon)" class="w-4 h-4 text-zinc-600" />
             </div>
-            <p v-if="collection.description" class="text-xs text-gray-600 mt-1">
-              {{ collection.description }}
-            </p>
+
+            <!-- Информация -->
+            <div class="flex-1">
+              <div class="flex items-center space-x-2">
+                <span class="font-semibold text-sm text-zinc-900">{{ collection.name }}</span>
+                <span v-if="collection.is_public" class="text-xs text-emerald-600">🌐</span>
+                <span v-if="collection.is_favorite" class="text-xs text-rose-500">❤️</span>
+              </div>
+              <p v-if="collection.description" class="text-xs text-zinc-600 mt-1">
+                {{ collection.description }}
+              </p>
+            </div>
           </div>
-        </div>
+        </UiCard>
 
         <!-- Статистика -->
         <div class="grid grid-cols-2 gap-4">
-          <div class="text-center p-3 bg-gray-50 border-2 border-gray-200">
-            <div class="text-lg font-bold">{{ linksCount || 0 }}</div>
-            <div class="text-xs text-gray-600 uppercase">Ссылок</div>
-          </div>
-          <div class="text-center p-3 bg-gray-50 border-2 border-gray-200">
-            <div class="text-lg font-bold">{{ childrenCount || 0 }}</div>
-            <div class="text-xs text-gray-600 uppercase">Подколлекций</div>
-          </div>
+          <UiCard class="text-center p-3">
+            <div class="text-lg font-semibold text-zinc-900">{{ linksCount || 0 }}</div>
+            <div class="text-xs text-zinc-600">Links</div>
+          </UiCard>
+          <UiCard class="text-center p-3">
+            <div class="text-lg font-semibold text-zinc-900">{{ childrenCount || 0 }}</div>
+            <div class="text-xs text-zinc-600">Subcollections</div>
+          </UiCard>
         </div>
 
         <!-- Дополнительное предупреждение при наличии содержимого -->
         <div
           v-if="(linksCount || 0) > 0 || (childrenCount || 0) > 0"
-          class="border-2 border-yellow-500 bg-yellow-50 p-3"
+          class="border border-yellow-300 bg-yellow-50 p-3 rounded-lg"
         >
           <div class="flex items-start space-x-3">
             <div class="flex-shrink-0">
               <AlertTriangle class="w-4 h-4 text-yellow-600" />
             </div>
             <div class="text-sm text-yellow-800">
-              <strong>Коллекция не пуста!</strong>
+              <strong>Collection is not empty!</strong>
               <template v-if="(linksCount || 0) > 0">
-                В ней {{ linksCount }}
-                {{ linksCount === 1 ? 'ссылка' : linksCount < 5 ? 'ссылки' : 'ссылок' }}.
+                It contains {{ linksCount }} {{ linksCount === 1 ? 'link' : 'links' }}.
               </template>
               <template v-if="(childrenCount || 0) > 0">
-                У неё {{ childrenCount }}
-                {{
-                  childrenCount === 1
-                    ? 'подколлекция'
-                    : childrenCount < 5
-                      ? 'подколлекции'
-                      : 'подколлекций'
-                }}.
+                It has {{ childrenCount }}
+                {{ childrenCount === 1 ? 'subcollection' : 'subcollections' }}.
               </template>
             </div>
           </div>
@@ -85,38 +80,26 @@
 
       <!-- Подтверждение -->
       <div class="space-y-3">
-        <label class="block text-sm font-medium uppercase">
-          Для подтверждения введите название коллекции:
+        <label class="block text-sm font-medium text-zinc-900">
+          To confirm, enter the collection name:
         </label>
-        <input
+        <UiInput
           v-model="confirmationName"
           type="text"
           :placeholder="collection?.name || ''"
-          class="w-full p-3 border-2 border-black bg-white focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-          :class="{ 'border-red-500': showConfirmationError }"
+          :class="{ 'border-red-300 focus:border-red-500': showConfirmationError }"
         />
-        <p v-if="showConfirmationError" class="text-red-500 text-xs">Название не совпадает</p>
+        <p v-if="showConfirmationError" class="text-red-600 text-xs">Name does not match</p>
       </div>
 
       <!-- Кнопки действий -->
       <div class="flex items-center justify-end space-x-3 pt-6">
-        <button
-          type="button"
-          @click="handleClose"
-          class="px-6 py-3 border-2 border-black bg-white text-sm font-bold uppercase hover:bg-gray-100 transition-colors duration-150"
-        >
-          Отмена
-        </button>
+        <UiButton variant="outline" @click="handleClose"> Cancel </UiButton>
 
-        <button
-          type="button"
-          @click="handleDelete"
-          :disabled="!canDelete || loading"
-          class="px-6 py-3 border-2 border-red-500 bg-red-500 text-white text-sm font-bold uppercase hover:bg-red-600 transition-colors duration-150 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <span v-if="loading">Удаление...</span>
-          <span v-else>Удалить навсегда</span>
-        </button>
+        <UiButton variant="destructive" @click="handleDelete" :disabled="!canDelete || loading">
+          <span v-if="loading">Deleting...</span>
+          <span v-else>Delete Forever</span>
+        </UiButton>
       </div>
     </div>
   </UiModal>
@@ -126,31 +109,12 @@
 import { ref, computed } from 'vue'
 import { useCollections } from '../../../composables/useCollections'
 import UiModal from '../../ui/UiModal.vue'
+import UiButton from '../../ui/UiButton.vue'
+import UiInput from '../../ui/UiInput.vue'
+import UiCard from '../../ui/UiCard.vue'
+import { COLLECTION_ICONS, type IconKey } from '../../../utils/icons'
 import type { Collection } from '../../../types'
 import { AlertTriangle } from 'lucide-vue-next'
-import {
-  Folder,
-  FolderOpen,
-  Star,
-  Heart,
-  Bookmark,
-  Tag,
-  Archive,
-  Globe,
-  Lock,
-  Coffee,
-  Briefcase,
-  Home,
-  User,
-  Settings,
-  Book,
-  Music,
-  Image,
-  Video,
-  Code,
-  Gamepad2,
-  ShoppingCart,
-} from 'lucide-vue-next'
 
 interface Props {
   show: boolean
@@ -175,31 +139,6 @@ const confirmationName = ref('')
 const showConfirmationError = ref(false)
 const loading = ref(false)
 
-// Компоненты иконок
-const iconComponents = {
-  folder: Folder,
-  'folder-open': FolderOpen,
-  star: Star,
-  heart: Heart,
-  bookmark: Bookmark,
-  tag: Tag,
-  archive: Archive,
-  globe: Globe,
-  lock: Lock,
-  coffee: Coffee,
-  briefcase: Briefcase,
-  home: Home,
-  user: User,
-  settings: Settings,
-  book: Book,
-  music: Music,
-  image: Image,
-  video: Video,
-  code: Code,
-  gamepad2: Gamepad2,
-  'shopping-cart': ShoppingCart,
-}
-
 // Можно ли удалить коллекцию
 const canDelete = computed(() => {
   return props.collection && confirmationName.value.trim() === props.collection.name.trim()
@@ -207,7 +146,7 @@ const canDelete = computed(() => {
 
 // Получить компонент иконки
 const getIconComponent = (iconName?: string) => {
-  return iconComponents[iconName as keyof typeof iconComponents] || Folder
+  return COLLECTION_ICONS[iconName as IconKey]?.component || COLLECTION_ICONS.folder.component
 }
 
 // Удалить коллекцию
