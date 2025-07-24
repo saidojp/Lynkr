@@ -1,5 +1,5 @@
 <template>
-  <UiModal :show="show" @close="handleClose" :title="'Создать коллекцию'" :size="'large'">
+  <UiModal :show="show" @close="handleClose" :title="'Создать коллекцию'" size="lg">
     <CollectionForm
       :parent-id="parentId"
       :is-edit="false"
@@ -40,7 +40,6 @@ const handleSubmit = async (data: Partial<Collection>) => {
     const collectionData = {
       name: data.name,
       description: data.description,
-      color: data.color,
       icon: data.icon,
       parent_id: data.parent_id || props.parentId,
     }

@@ -32,11 +32,6 @@
       <!-- Иконка коллекции -->
       <div
         class="flex-shrink-0 w-6 h-6 border border-zinc-300 bg-white rounded-md flex items-center justify-center mr-3"
-        :style="{
-          borderLeftColor: collection.color || '#71717a',
-          borderLeftWidth: '3px',
-          backgroundColor: isSelected ? 'white' : 'white',
-        }"
       >
         <component :is="getIconComponent(collection.icon)" class="w-3 h-3 text-zinc-600" />
       </div>

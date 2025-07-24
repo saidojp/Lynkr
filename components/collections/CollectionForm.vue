@@ -45,12 +45,6 @@
       <CollectionIconPicker v-model="form.icon" :current-icon="form.icon" />
     </div>
 
-    <!-- Выбор цвета -->
-    <div>
-      <label class="block text-sm font-medium text-zinc-900 mb-2">Collection Color</label>
-      <CollectionColorPicker v-model="form.color" :current-color="form.color" />
-    </div>
-
     <!-- Настройки видимости -->
     <div class="space-y-4">
       <h3 class="text-sm font-semibold text-zinc-900">Visibility Settings</h3>
@@ -184,7 +178,6 @@
         <!-- Иконка -->
         <div
           class="w-8 h-8 border border-zinc-300 bg-white rounded-md flex items-center justify-center"
-          :style="{ borderLeftColor: form.color, borderLeftWidth: '3px' }"
         >
           <component :is="getIconComponent(form.icon)" class="w-4 h-4 text-zinc-600" />
         </div>
@@ -226,7 +219,6 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../stores/collections'
 import CollectionIconPicker from './CollectionIconPicker.vue'
-import CollectionColorPicker from './CollectionColorPicker.vue'
 import UiButton from '../ui/UiButton.vue'
 import UiInput from '../ui/UiInput.vue'
 import UiTextarea from '../ui/UiTextarea.vue'
@@ -262,7 +254,6 @@ const form = ref({
   description: '',
   parent_id: props.parentId || '',
   icon: 'folder',
-  color: '#9aa0a6',
   is_public: false,
   is_favorite: false,
   default_sort: 'created_desc',
@@ -363,7 +354,6 @@ const initializeForm = () => {
       description: props.collection.description || '',
       parent_id: props.collection.parent_id || '',
       icon: props.collection.icon || 'folder',
-      color: props.collection.color || '#9aa0a6',
       is_public: props.collection.is_public || false,
       is_favorite: props.collection.is_favorite || false,
       default_sort: props.collection.default_sort || 'created_desc',
