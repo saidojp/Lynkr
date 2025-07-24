@@ -329,7 +329,7 @@ const findCollectionById = (collections: CollectionTree[], id: string): Collecti
 
 // Переключение раскрытия коллекции
 const toggleCollectionExpanded = (collectionId: string) => {
-  collectionsStore.toggleCollectionExpanded(collectionId)
+  collectionsStore.toggleCollectionExpansion(collectionId)
 }
 
 const handleExport = (collection: CollectionTree) => {
@@ -341,12 +341,20 @@ const handleAddChild = (parentCollection: CollectionTree) => {
 }
 
 const handleToggleFavorite = async (collection: CollectionTree) => {
-  await collectionsStore.toggleFavorite(collection.id)
+  // TODO: Implement toggleFavorite in store
+  collectionsStore.updateCollection({
+    id: collection.id,
+    is_favorite: !collection.is_favorite,
+  })
   emit('toggle-favorite', collection)
 }
 
 const handleTogglePublic = async (collection: CollectionTree) => {
-  await collectionsStore.togglePublic(collection.id)
+  // TODO: Implement togglePublic in store
+  collectionsStore.updateCollection({
+    id: collection.id,
+    is_public: !collection.is_public,
+  })
   emit('toggle-public', collection)
 }
 
@@ -369,7 +377,8 @@ watch(searchQuery, newQuery => {
 // Инициализация при монтировании
 onMounted(async () => {
   if (collectionsTree.value.length === 0) {
-    await collectionsStore.fetchCollections()
+    // TODO: Implement fetchCollections in store
+    collectionsStore.loadMockData()
   }
 })
 </script>

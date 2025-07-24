@@ -25,29 +25,26 @@
 
       <!-- Features -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
-        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div class="text-3xl mb-4">📁</div>
-          <h3 class="font-black uppercase mb-2">Organize</h3>
-          <p class="font-mono text-sm text-gray-600">
+        <UiCard class="p-6 hover:shadow-md transition-all duration-200 text-center">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-2">Organize</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
             Create collections to organize your links by topic, project, or any way you like
           </p>
-        </div>
+        </UiCard>
 
-        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div class="text-3xl mb-4">🔖</div>
-          <h3 class="font-black uppercase mb-2">Save</h3>
-          <p class="font-mono text-sm text-gray-600">
+        <UiCard class="p-6 hover:shadow-md transition-all duration-200 text-center">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-2">Save</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
             Quickly save links with descriptions and tags for easy retrieval later
           </p>
-        </div>
+        </UiCard>
 
-        <div class="p-6 bg-white border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-          <div class="text-3xl mb-4">🎨</div>
-          <h3 class="font-black uppercase mb-2">Customize</h3>
-          <p class="font-mono text-sm text-gray-600">
+        <UiCard class="p-6 hover:shadow-md transition-all duration-200 text-center">
+          <h3 class="text-lg font-semibold text-zinc-900 mb-2">Customize</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
             Personalize your collections with colors, icons, and custom organization
           </p>
-        </div>
+        </UiCard>
       </div>
     </div>
   </div>

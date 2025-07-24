@@ -1,102 +1,139 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <!-- Header with user info -->
-    <div class="border-b-2 border-gray-900 bg-orange-50">
-      <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-        <div>
-          <h1 class="text-2xl font-black uppercase">Dashboard</h1>
-          <p class="font-mono text-sm text-gray-600" v-if="user">
-            Welcome, {{ user.user_metadata?.first_name || 'User' }}
-            {{ user.user_metadata?.last_name || '' }}
-          </p>
+  <div class="min-h-screen bg-zinc-50">
+    <!-- Modern Header -->
+    <div class="bg-white border-b border-zinc-200">
+      <div class="max-w-7xl mx-auto px-6 py-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-3xl font-bold text-zinc-900">Dashboard</h1>
+            <p class="text-zinc-600 mt-1" v-if="user">
+              Welcome back, {{ user.user_metadata?.first_name || 'User' }}
+              {{ user.user_metadata?.last_name || '' }}
+            </p>
+          </div>
+          <UiButton @click="handleLogout" variant="outline" size="sm"> Logout </UiButton>
         </div>
-        <UiButton @click="handleLogout" variant="destructive"> Logout </UiButton>
       </div>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="max-w-7xl mx-auto px-6 py-8">
       <!-- Quick Actions -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <!-- Collections -->
         <NuxtLink to="/collections">
-          <UiCard class="cursor-pointer hover:shadow-md transition-all duration-200 group">
-            <UiCardContent class="p-6">
-              <div class="flex items-center space-x-4">
-                <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
-                  <Folder class="w-6 h-6 text-zinc-700" />
+          <UiCard
+            class="cursor-pointer hover:shadow-lg hover:border-zinc-300 transition-all duration-200 group h-full"
+          >
+            <div class="p-6">
+              <div class="flex items-start space-x-4">
+                <div
+                  class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center group-hover:bg-zinc-200 transition-colors"
+                >
+                  <Folder class="w-7 h-7 text-zinc-600" />
                 </div>
-                <div>
-                  <h3 class="text-lg font-semibold text-zinc-900">Collections</h3>
-                  <p class="text-sm text-zinc-600">Manage your collections</p>
+                <div class="flex-1 min-w-0">
+                  <h3 class="text-xl font-semibold text-zinc-900 mb-1">Collections</h3>
+                  <p class="text-zinc-600 text-sm leading-relaxed">
+                    Manage and organize your link collections
+                  </p>
                 </div>
               </div>
-            </UiCardContent>
+            </div>
           </UiCard>
         </NuxtLink>
 
         <!-- Add Collection -->
         <UiCard
           @click="createCollection"
-          class="cursor-pointer hover:shadow-md transition-all duration-200 group"
+          class="cursor-pointer hover:shadow-lg hover:border-zinc-300 transition-all duration-200 group h-full"
         >
-          <UiCardContent class="p-6">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
-                <Plus class="w-6 h-6 text-zinc-700" />
+          <div class="p-6">
+            <div class="flex items-start space-x-4">
+              <div
+                class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center group-hover:bg-zinc-200 transition-colors"
+              >
+                <Plus class="w-7 h-7 text-zinc-600" />
               </div>
-              <div>
-                <h3 class="text-lg font-semibold text-zinc-900">New Collection</h3>
-                <p class="text-sm text-zinc-600">Create a new collection</p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-xl font-semibold text-zinc-900 mb-1">New Collection</h3>
+                <p class="text-zinc-600 text-sm leading-relaxed">
+                  Create a new collection for your links
+                </p>
               </div>
             </div>
-          </UiCardContent>
+          </div>
         </UiCard>
 
         <!-- Stats -->
-        <UiCard>
-          <UiCardContent class="p-6">
-            <div class="flex items-center space-x-4">
-              <div class="w-12 h-12 bg-zinc-100 rounded-lg flex items-center justify-center">
-                <BarChart3 class="w-6 h-6 text-zinc-700" />
+        <UiCard class="h-full">
+          <div class="p-6">
+            <div class="flex items-start space-x-4">
+              <div class="w-14 h-14 bg-zinc-100 rounded-xl flex items-center justify-center">
+                <BarChart3 class="w-7 h-7 text-zinc-600" />
               </div>
-              <div>
-                <h3 class="text-lg font-semibold text-zinc-900">Statistics</h3>
-                <p class="text-sm text-zinc-600">{{ collectionsCount }} collections</p>
+              <div class="flex-1 min-w-0">
+                <h3 class="text-xl font-semibold text-zinc-900 mb-1">Statistics</h3>
+                <p class="text-zinc-600 text-sm leading-relaxed">
+                  {{ collectionsCount }} collections created
+                </p>
               </div>
             </div>
-          </UiCardContent>
+          </div>
         </UiCard>
       </div>
 
       <!-- Recent Collections -->
       <div class="mb-12">
-        <h2 class="text-2xl font-semibold text-zinc-900 mb-6">Recent Collections</h2>
+        <div class="flex items-center justify-between mb-8">
+          <h2 class="text-2xl font-bold text-zinc-900">Recent Collections</h2>
+          <NuxtLink to="/collections">
+            <UiButton variant="outline" size="sm">View All</UiButton>
+          </NuxtLink>
+        </div>
+
         <div
           v-if="recentCollections.length > 0"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         >
-          <UiCard v-for="collection in recentCollections" :key="collection.id">
-            <UiCardContent class="p-4">
-              <div class="flex items-center space-x-3">
+          <UiCard
+            v-for="collection in recentCollections"
+            :key="collection.id"
+            class="hover:shadow-md transition-all duration-200 cursor-pointer"
+          >
+            <div class="p-5">
+              <div class="flex items-center space-x-4">
                 <div
-                  class="w-8 h-8 rounded-lg flex items-center justify-center text-sm"
+                  class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
                   :style="{ backgroundColor: collection.color }"
                 >
-                  <Folder class="w-4 h-4 text-white" />
+                  <Folder class="w-6 h-6 text-white" />
                 </div>
-                <div>
-                  <h3 class="font-semibold text-sm text-zinc-900">{{ collection.name }}</h3>
-                  <p v-if="collection.description" class="text-xs text-zinc-600 truncate">
+                <div class="flex-1 min-w-0">
+                  <h3 class="font-semibold text-zinc-900 truncate">{{ collection.name }}</h3>
+                  <p v-if="collection.description" class="text-sm text-zinc-600 truncate mt-1">
                     {{ collection.description }}
                   </p>
+                  <p v-else class="text-sm text-zinc-400 mt-1">No description</p>
                 </div>
               </div>
-            </UiCardContent>
+            </div>
           </UiCard>
         </div>
-        <div v-else class="text-center py-12">
-          <p class="text-zinc-500">No collections yet. Create your first one!</p>
-        </div>
+
+        <UiCard v-else class="text-center py-16">
+          <div class="max-w-sm mx-auto">
+            <div
+              class="w-16 h-16 bg-zinc-100 rounded-full flex items-center justify-center mx-auto mb-4"
+            >
+              <Folder class="w-8 h-8 text-zinc-400" />
+            </div>
+            <h3 class="text-lg font-semibold text-zinc-900 mb-2">No collections yet</h3>
+            <p class="text-zinc-600 mb-6">
+              Create your first collection to get started organizing your links.
+            </p>
+            <UiButton @click="createCollection">Create Collection</UiButton>
+          </div>
+        </UiCard>
       </div>
     </div>
   </div>
