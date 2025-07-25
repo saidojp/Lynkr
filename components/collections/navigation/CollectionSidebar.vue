@@ -22,7 +22,7 @@
             @click="toggleAllCollections"
             :title="allExpanded ? 'Collapse all' : 'Expand all'"
           >
-            <component :is="allExpanded ? 'ChevronsDown' : 'ChevronsUp'" class="w-4 h-4" />
+            <component :is="allExpanded ? ChevronsDown : ChevronsUp" class="w-4 h-4" />
           </UiButton>
         </div>
       </div>

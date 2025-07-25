@@ -7,7 +7,6 @@
       @click="$emit('navigate', null)"
       :class="{ 'bg-zinc-900 text-white border-zinc-900': !currentCollectionId }"
     >
-      <Home class="w-4 h-4 mr-2" />
       <span>Home</span>
     </UiButton>
 
@@ -26,14 +25,6 @@
         class="max-w-xs"
         :title="breadcrumb.name"
       >
-        <!-- Иконка коллекции -->
-        <div
-          class="w-4 h-4 border-l-2 rounded-sm flex items-center justify-center mr-2"
-          :style="{ borderLeftColor: breadcrumb.color || '#71717a' }"
-        >
-          <component :is="getIconComponent(breadcrumb.icon)" class="w-3 h-3" />
-        </div>
-
         <span class="truncate">{{ breadcrumb.name }}</span>
       </UiButton>
 
@@ -47,7 +38,7 @@
       <UiButton
         v-if="breadcrumbs.length > 0"
         variant="outline"
-        size="icon"
+        size="icon-sm"
         @click="goUp"
         title="Go up one level"
       >
@@ -55,7 +46,7 @@
       </UiButton>
 
       <!-- Кнопка создания подколлекции -->
-      <UiButton @click="$emit('create-subcollection', currentCollectionId)">
+      <UiButton @click="$emit('create-subcollection', currentCollectionId)" size="sm">
         <Plus class="w-4 h-4 mr-2" />
         <span>Create</span>
       </UiButton>
@@ -68,9 +59,8 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCollectionsStore } from '../../../stores/collections'
 import UiButton from '../../ui/UiButton.vue'
-import { COLLECTION_ICONS, type IconKey } from '../../../utils/icons'
 import type { Collection } from '../../../types'
-import { Home, ChevronRight, ArrowUp, Plus } from 'lucide-vue-next'
+import { ChevronRight, ArrowUp, Plus } from 'lucide-vue-next'
 
 interface Props {
   currentCollectionId?: string | null

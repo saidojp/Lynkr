@@ -20,7 +20,7 @@ import { computed } from 'vue'
 
 interface Props {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
-  size?: 'default' | 'sm' | 'lg' | 'icon'
+  size?: 'default' | 'sm' | 'lg' | 'icon' | 'icon-sm'
   disabled?: boolean
   className?: string
 }
@@ -38,18 +38,19 @@ const sizeClasses = computed(() => {
     sm: 'h-9 px-3 text-xs rounded-md',
     lg: 'h-11 px-8 text-base rounded-md',
     icon: 'h-10 w-10 rounded-md',
+    'icon-sm': 'h-9 w-9 rounded-md',
   }
   return sizes[props.size]
 })
 
 const variantClasses = computed(() => {
   const variants = {
-    default: 'bg-zinc-900 text-zinc-50 hover:bg-zinc-800 shadow hover:shadow-md',
-    destructive: 'bg-red-500 text-zinc-50 hover:bg-red-600 shadow hover:shadow-md',
-    outline: 'border border-zinc-200 bg-white hover:bg-zinc-100 hover:text-zinc-900',
-    secondary: 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200',
-    ghost: 'hover:bg-zinc-100 hover:text-zinc-900',
-    link: 'text-zinc-900 underline-offset-4 hover:underline',
+    default: 'bg-zinc-900 text-zinc-50 shadow',
+    destructive: 'bg-red-500 text-zinc-50 shadow',
+    outline: 'border border-zinc-200 bg-white',
+    secondary: 'bg-zinc-100 text-zinc-900',
+    ghost: '',
+    link: 'text-zinc-900 underline-offset-4',
   }
   return variants[props.variant]
 })

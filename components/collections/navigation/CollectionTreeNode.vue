@@ -2,7 +2,7 @@
   <div class="collection-node">
     <!-- Основная строка коллекции -->
     <div
-      class="flex items-center p-2 hover:bg-zinc-50 cursor-pointer group relative rounded-md"
+      class="flex items-center p-2 cursor-pointer group relative rounded-md"
       :class="{
         'bg-zinc-900 text-white': isSelected,
         'ml-4': level > 0,
@@ -18,7 +18,6 @@
         size="icon"
         @click.stop="$emit('toggle-expand', collection.id)"
         class="flex-shrink-0 w-5 h-5 mr-2"
-        :class="{ 'hover:bg-zinc-600': isSelected }"
       >
         <ChevronRight
           class="w-3 h-3 transition-transform duration-150"
@@ -28,13 +27,6 @@
 
       <!-- Отступ если нет детей -->
       <div v-else class="w-5 flex-shrink-0"></div>
-
-      <!-- Иконка коллекции -->
-      <div
-        class="flex-shrink-0 w-6 h-6 border border-zinc-300 bg-white rounded-md flex items-center justify-center mr-3"
-      >
-        <component :is="getIconComponent(collection.icon)" class="w-3 h-3 text-zinc-600" />
-      </div>
 
       <!-- Название коллекции -->
       <div class="flex-1 min-w-0">
