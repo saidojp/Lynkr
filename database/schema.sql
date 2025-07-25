@@ -21,6 +21,10 @@ create table public.collections (
   icon text,
   parent_id uuid references public.collections(id) on delete cascade,
   position integer not null default 0,
+  is_public boolean default false,
+  is_favorite boolean default false,
+  default_sort text default 'created_desc',
+  default_view text default 'grid',
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -29,13 +33,16 @@ create table public.collections (
 create table public.links (
   id uuid default gen_random_uuid() primary key,
   user_id uuid references public.users(id) on delete cascade not null,
-  collection_id uuid references public.collections(id) on delete cascade not null,
+  collection_id uuid references public.collections(id) on delete cascade,
   url text not null,
   title text not null,
   description text,
   color text,
   is_favorite boolean default false,
+  is_archived boolean default false,
   position integer not null default 0,
+  visit_count integer default 0,
+  last_visited_at timestamptz,
   metadata jsonb default '{}'::jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
