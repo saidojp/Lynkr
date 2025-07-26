@@ -1,5 +1,12 @@
 
 
+-- Удаляем существующие таблицы если они есть (в правильном порядке)
+drop table if exists public.link_tags cascade;
+drop table if exists public.tags cascade;
+drop table if exists public.links cascade;
+drop table if exists public.collections cascade;
+drop table if exists public.users cascade;
+
 -- Таблица пользователей (расширение auth.users)
 create table public.users (
   id uuid references auth.users on delete cascade primary key,
@@ -14,7 +21,7 @@ create table public.users (
 -- Таблица коллекций
 create table public.collections (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references public.users(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
   name text not null,
   description text,
   color text,
@@ -32,7 +39,7 @@ create table public.collections (
 -- Таблица ссылок
 create table public.links (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references public.users(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
   collection_id uuid references public.collections(id) on delete cascade,
   url text not null,
   title text not null,
@@ -44,6 +51,7 @@ create table public.links (
   visit_count integer default 0,
   last_visited_at timestamptz,
   metadata jsonb default '{}'::jsonb,
+  tags text[] default array[]::text[],
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -51,7 +59,7 @@ create table public.links (
 -- Таблица тегов
 create table public.tags (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references public.users(id) on delete cascade not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
   name text not null,
   color text,
   created_at timestamptz default now(),

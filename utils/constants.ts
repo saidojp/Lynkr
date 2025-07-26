@@ -1,17 +1,5 @@
 // utils/constants.ts
 
-// Цветовая палитра для коллекций (из Phase 2 плана)
-export const COLLECTION_COLORS = {
-  default: '#9aa0a6',
-  blue: '#1a73e8',
-  green: '#34a853',
-  yellow: '#fbbc04',
-  red: '#ea4335',
-  purple: '#9c27b0',
-  orange: '#ff9800',
-  pink: '#e91e63',
-}
-
 // Названия цветов на русском
 export const COLOR_NAMES = {
   '#9aa0a6': 'Серый',
@@ -23,31 +11,6 @@ export const COLOR_NAMES = {
   '#ff9800': 'Оранжевый',
   '#e91e63': 'Розовый',
 }
-
-// Доступные иконки для коллекций
-export const COLLECTION_ICONS = [
-  'folder',
-  'folder-open',
-  'star',
-  'heart',
-  'bookmark',
-  'tag',
-  'archive',
-  'globe',
-  'lock',
-  'coffee',
-  'briefcase',
-  'home',
-  'user',
-  'settings',
-  'book',
-  'music',
-  'image',
-  'video',
-  'code',
-  'gamepad2',
-  'shopping-cart',
-]
 
 // Названия иконок на русском
 export const ICON_NAMES = {

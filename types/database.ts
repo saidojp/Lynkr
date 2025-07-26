@@ -42,14 +42,18 @@ export interface Collection {
 export interface Link {
   id: string
   user_id: string
-  collection_id: string
+  collection_id?: string
   url: string
   title: string
   description?: string
   color?: string
   is_favorite: boolean
+  is_archived: boolean
   position: number
+  visit_count: number
+  last_visited_at?: string
   metadata?: LinkMetadata
+  tags?: string[]
   created_at: string
   updated_at: string
 }
@@ -59,7 +63,19 @@ export interface LinkMetadata {
   description?: string
   image?: string
   favicon?: string
-  site_name?: string
+  domain?: string
+  og_title?: string
+  og_description?: string
+  og_image?: string
+  og_type?: string
+  twitter_title?: string
+  twitter_description?: string
+  twitter_image?: string
+  author?: string
+  published_date?: string
+  article_tag?: string[]
+  video_duration?: number
+  video_url?: string
 }
 
 export interface Tag {
@@ -107,18 +123,18 @@ export type Database = {
       }
       collections: {
         Row: Collection
-        Insert: Omit<Collection, 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Omit<Collection, 'id' | 'created_at' | 'updated_at'>>
+        Insert: Omit<Collection, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Collection, 'id' | 'user_id' | 'created_at'>>
       }
       links: {
         Row: Link
-        Insert: Omit<Link, 'id' | 'created_at' | 'updated_at'>
-        Update: Partial<Omit<Link, 'id' | 'created_at' | 'updated_at'>>
+        Insert: Omit<Link, 'id' | 'user_id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Link, 'id' | 'user_id' | 'created_at'>>
       }
       tags: {
         Row: Tag
-        Insert: Omit<Tag, 'id' | 'created_at'>
-        Update: Partial<Omit<Tag, 'id' | 'created_at'>>
+        Insert: Omit<Tag, 'id' | 'user_id' | 'created_at'>
+        Update: Partial<Omit<Tag, 'id' | 'user_id' | 'created_at'>>
       }
       link_tags: {
         Row: LinkTag
